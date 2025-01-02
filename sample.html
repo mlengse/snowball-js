@@ -14,7 +14,7 @@
         }
       };
       function println(lng, word){
-        document.getElementById(lng).innerHTML = "<b>" + lng + "</b>: '" + word + "' -> '" + new Stem(lng)(word) + "'";
+        document.getElementById(lng).textContent = lng + ": '" + word + "' -> '" + new Stem(lng)(word) + "'";
       }
       function fillStems(){
         println("danish", "aabenbaringen");

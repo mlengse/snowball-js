@@ -3325,6 +3325,300 @@ function Snowball(lng) {
 				return true;
 			}
 		},
+		IndonesianStemmer : function() {
+			var a_0 = [new Among("kah", -1, 1), new Among("lah", -1, 1),
+					new Among("pun", -1, 1)], a_1 = [new Among("nya", -1, 1),
+					new Among("ku", -1, 1), new Among("mu", -1, 1)], a_2 = [
+					new Among("i", -1, 1, r_SUFFIX_I_OK), new Among("an", -1, 1,
+					r_SUFFIX_AN_OK), new Among("kan", 1, 1, r_SUFFIX_KAN_OK)], a_3 = [
+					new Among("di", -1, 1), new Among("ke", -1, 2), new Among(
+					"me", -1, 1), new Among("mem", 2, 5), new Among("men", 2,
+					1), new Among("meng", 4, 1), new Among("meny", 4, 3,
+					r_VOWEL), new Among("pem", -1, 6), new Among("pen", -1, 2),
+					new Among("peng", 8, 2), new Among("peny", 8, 4, r_VOWEL),
+					new Among("ter", -1, 1)], a_4 = [new Among("be", -1, 3,
+					r_KER), new Among("belajar", 0, 4), new Among("ber", 0, 3),
+					new Among("pe", -1, 1), new Among("pelajar", 3, 2),
+					new Among("per", 3, 1)], g_vowel = [17, 65, 16], I_prefix, I_measure, sbp = new SnowballProgram();
+			this.setCurrent = function(word) {
+				sbp.s_c(word);
+			};
+			this.getCurrent = function() {
+				return sbp.g_c();
+			};
+			function r_remove_particle() {
+				sbp.k = sbp.c;
+				if (sbp.f_a_b(a_0, 3) == 0) {
+					return false;
+				}
+				sbp.b = sbp.c;
+				sbp.s_d();
+				I_measure -= 1;
+				return true;
+			}
+			function r_remove_possessive_pronoun() {
+				sbp.k = sbp.c;
+				if (sbp.f_a_b(a_1, 3) == 0) {
+					return false;
+				}
+				sbp.b = sbp.c;
+				sbp.s_d();
+				I_measure -= 1;
+				return true;
+			}
+			function r_SUFFIX_KAN_OK() {
+				if (!(I_prefix != 3)) {
+					return false;
+				}
+				if (!(I_prefix != 2)) {
+					return false;
+				}
+				return true;
+			}
+			function r_SUFFIX_AN_OK() {
+				if (!(I_prefix != 1)) {
+					return false;
+				}
+				return true;
+			}
+			function r_SUFFIX_I_OK() {
+				if (!(I_prefix <= 2)) {
+					return false;
+				}
+				{
+					var v_1 = sbp.l - sbp.c;
+					lab0: {
+						if (!(sbp.e_s_b(1, "s"))) {
+							break lab0;
+						}
+						return false;
+					}
+					sbp.c = sbp.l - v_1;
+				}
+				return true;
+			}
+			function r_remove_suffix() {
+				sbp.k = sbp.c;
+				if (sbp.f_a_b(a_2, 3) == 0) {
+					return false;
+				}
+				sbp.b = sbp.c;
+				sbp.s_d();
+				I_measure -= 1;
+				return true;
+			}
+			function r_VOWEL() {
+				if (!(sbp.i_g(g_vowel, 97, 117))) {
+					return false;
+				}
+				return true;
+			}
+			function r_KER() {
+				if (!(sbp.o_g(g_vowel, 97, 117))) {
+					return false;
+				}
+				if (!(sbp.e_s(2, "er"))) {
+					return false;
+				}
+				return true;
+			}
+			function r_remove_first_order_prefix() {
+				var among_var;
+				sbp.b = sbp.c;
+				among_var = sbp.f_a(a_3, 12);
+				if (among_var == 0) {
+					return false;
+				}
+				sbp.k = sbp.c;
+				switch (among_var) {
+					case 1:
+						sbp.s_d();
+						I_prefix = 1;
+						I_measure -= 1;
+						break;
+					case 2:
+						sbp.s_d();
+						I_prefix = 3;
+						I_measure -= 1;
+						break;
+					case 3:
+						I_prefix = 1;
+						sbp.s_f("s");
+						I_measure -= 1;
+						break;
+					case 4:
+						I_prefix = 3;
+						sbp.s_f("s");
+						I_measure -= 1;
+						break;
+					case 5:
+						I_prefix = 1;
+						I_measure -= 1;
+						lab0: {
+							var v_1 = sbp.c;
+							lab1: {
+								var v_2 = sbp.c;
+								if (!(sbp.i_g(g_vowel, 97, 117))) {
+									break lab1;
+								}
+								sbp.c = v_2;
+								sbp.s_f("p");
+								break lab0;
+							}
+							sbp.c = v_1;
+							sbp.s_d();
+						}
+						break;
+					case 6:
+						I_prefix = 3;
+						I_measure -= 1;
+						lab2: {
+							var v_3 = sbp.c;
+							lab3: {
+								var v_4 = sbp.c;
+								if (!(sbp.i_g(g_vowel, 97, 117))) {
+									break lab3;
+								}
+								sbp.c = v_4;
+								sbp.s_f("p");
+								break lab2;
+							}
+							sbp.c = v_3;
+							sbp.s_d();
+						}
+						break;
+				}
+				return true;
+			}
+			function r_remove_second_order_prefix() {
+				var among_var;
+				sbp.b = sbp.c;
+				among_var = sbp.f_a(a_4, 6);
+				if (among_var == 0) {
+					return false;
+				}
+				sbp.k = sbp.c;
+				switch (among_var) {
+					case 1:
+						sbp.s_d();
+						I_prefix = 2;
+						I_measure -= 1;
+						break;
+					case 2:
+						sbp.s_f("ajar");
+						I_measure -= 1;
+						break;
+					case 3:
+						sbp.s_d();
+						I_prefix = 4;
+						I_measure -= 1;
+						break;
+					case 4:
+						sbp.s_f("ajar");
+						I_prefix = 4;
+						I_measure -= 1;
+						break;
+				}
+				return true;
+			}
+			this.stem = function() {
+				I_measure = 0;
+				var v_1 = sbp.c;
+				lab0: {
+					while (true) {
+						var v_2 = sbp.c;
+						lab1: {
+							golab2: while (true) {
+								lab3: {
+									if (!(sbp.i_g(g_vowel, 97, 117))) {
+										break lab3;
+									}
+									break golab2;
+								}
+								if (sbp.c >= sbp.l) {
+									break lab1;
+								}
+								sbp.c++;
+							}
+							I_measure += 1;
+							continue;
+						}
+						sbp.c = v_2;
+						break;
+					}
+				}
+				sbp.c = v_1;
+				if (!(I_measure > 2)) {
+					return false;
+				}
+				I_prefix = 0;
+				sbp.lb = sbp.c;
+				sbp.c = sbp.l;
+				var v_4 = sbp.l - sbp.c;
+				r_remove_particle();
+				sbp.c = sbp.l - v_4;
+				if (!(I_measure > 2)) {
+					return false;
+				}
+				var v_5 = sbp.l - sbp.c;
+				r_remove_possessive_pronoun();
+				sbp.c = sbp.l - v_5;
+				sbp.c = sbp.lb;
+				if (!(I_measure > 2)) {
+					return false;
+				}
+				lab4: {
+					var v_6 = sbp.c;
+					lab5: {
+						var v_7 = sbp.c;
+						if (!r_remove_first_order_prefix()) {
+							break lab5;
+						}
+						var v_8 = sbp.c;
+						lab6: {
+							var v_9 = sbp.c;
+							if (!(I_measure > 2)) {
+								break lab6;
+							}
+							sbp.lb = sbp.c;
+							sbp.c = sbp.l;
+							if (!r_remove_suffix()) {
+								break lab6;
+							}
+							sbp.c = sbp.lb;
+							sbp.c = v_9;
+							if (!(I_measure > 2)) {
+								break lab6;
+							}
+							if (!r_remove_second_order_prefix()) {
+								break lab6;
+							}
+						}
+						sbp.c = v_8;
+						sbp.c = v_7;
+						break lab4;
+					}
+					sbp.c = v_6;
+					var v_10 = sbp.c;
+					r_remove_second_order_prefix();
+					sbp.c = v_10;
+					var v_11 = sbp.c;
+					lab7: {
+						if (!(I_measure > 2)) {
+							break lab7;
+						}
+						sbp.lb = sbp.c;
+						sbp.c = sbp.l;
+						if (!r_remove_suffix()) {
+							break lab7;
+						}
+						sbp.c = sbp.lb;
+					}
+					sbp.c = v_11;
+				}
+				return true;
+			}
+		},
 		NorwegianStemmer : function() {
 			var a_0 = [new Among("a", -1, 1), new Among("e", -1, 1),
 					new Among("ede", 1, 1), new Among("ande", 1, 1),

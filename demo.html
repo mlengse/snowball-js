@@ -14,7 +14,7 @@
         }
       };
       function println(lng, word){
-        document.getElementById("result").innerHTML = "<b>" + new Stem(lng)(word) + "</b>";
+        document.getElementById("result").textContent = new Stem(lng)(word);
       }
     </script>
   </head>
