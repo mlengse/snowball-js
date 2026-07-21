@@ -48,6 +48,79 @@ ${stemFactoryEntries}
 fs.writeFileSync(path.join(__dirname, 'stemmer', 'lib', 'Snowball.js'), output);
 console.log('Build complete: stemmer/lib/Snowball.js');
 
+const languagesDir = path.join(__dirname, 'stemmer', 'lib', 'languages');
+if (!fs.existsSync(languagesDir)) {
+  fs.mkdirSync(languagesDir, { recursive: true });
+}
+
+const languageNames = [];
+stemmers.forEach((src, i) => {
+  const match = src.match(/function\s+(\w+Stemmer)\s*\(/);
+  const className = match[1];
+  const langName = className.replace('Stemmer', '').toLowerCase();
+  languageNames.push(langName);
+
+  const body = extractBody(src);
+  const perLangOutput = `${license}
+
+module.exports = ${className};
+${indent(among, 0)}
+${indent(snowballProgram, 0)}
+function ${className}() {
+${indent(body, 1)}
+}
+`;
+
+  fs.writeFileSync(path.join(languagesDir, `${langName}.js`), perLangOutput);
+  fs.writeFileSync(path.join(languagesDir, `${langName}.mjs`),
+    `import ${className} from './${langName}.js';\nexport default ${className};\nexport { ${className} };\n`
+  );
+  fs.writeFileSync(path.join(languagesDir, `${langName}.d.ts`),
+    `export interface Stemmer {\n  setCurrent(word: string): void;\n  getCurrent(): string | null;\n  stem(): boolean;\n}\n\nexport default function ${className}(): Stemmer;\n`
+  );
+});
+
+const langExports = languageNames.map(l =>
+  `    "./${l}": {\n      "import": "./languages/${l}.mjs",\n      "require": "./languages/${l}.js"\n    }`
+).join(',\n');
+
+const exportsField = {
+  ".": {
+    "import": {
+      "types": "./index.d.ts",
+      "default": "./index.mjs"
+    },
+    "require": {
+      "types": "./index.d.ts",
+      "default": "./stemmer/lib/Snowball.js"
+    }
+  }
+};
+languageNames.forEach(l => {
+  exportsField[`./${l}`] = {
+    "import": {
+      "types": `./stemmer/lib/languages/${l}.d.ts`,
+      "default": `./stemmer/lib/languages/${l}.mjs`
+    },
+    "require": {
+      "types": `./stemmer/lib/languages/${l}.d.ts`,
+      "default": `./stemmer/lib/languages/${l}.js`
+    }
+  };
+});
+
+const pkgPath = path.join(__dirname, 'package.json');
+const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+pkg.exports = exportsField;
+pkg.files = [
+  "stemmer/",
+  "index.mjs",
+  "index.d.ts"
+];
+fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + '\n');
+console.log(`Build complete: ${languageNames.length} per-language bundles in stemmer/lib/languages/`);
+console.log('Updated package.json exports field');
+
 function extractBody(src) {
   const lines = src.split('\n');
   let depth = 0;
