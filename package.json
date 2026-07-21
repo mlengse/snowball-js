@@ -1,5 +1,5 @@
 {
-  "name": "snowball",
+  "name": "@mlengse/snowball-js",
   "version": "1.0.0",
   "description": "Snowball word stemming algorithm implementation",
   "keywords": [
