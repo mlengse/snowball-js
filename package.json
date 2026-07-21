@@ -8,7 +8,7 @@
     "snowball",
     "stemmer"
   ],
-  "author": "Oleg Mazko",
+  "author": "mLengse (medotsys@gmail.com)",
   "license": "MPL-1.1",
   "main": "./dist/Snowball.js",
   "module": "./index.mjs",
