@@ -19,7 +19,8 @@
   },
   "main": "./stemmer/lib/Snowball.js",
   "scripts": {
-    "build": "node build.js"
+    "build": "node build.js && npm run minify",
+    "minify": "terser stemmer/lib/Snowball.js -o stemmer/lib/Snowball.min.js -c -m --comments '/^!/'"
   },
   "devDependencies": {
     "terser": "^5.49.0"
