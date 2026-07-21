@@ -1,6 +1,6 @@
 {
   "name": "snowball",
-  "version": "0.3.1",
+  "version": "1.0.0",
   "description": "Snowball word stemming algorithm implementation",
   "keywords": [
     "nlp",
@@ -10,7 +10,7 @@
   ],
   "author": "Oleg Mazko",
   "license": "MPL-1.1",
-  "main": "./stemmer/lib/Snowball.js",
+  "main": "./dist/Snowball.js",
   "module": "./index.mjs",
   "types": "./index.d.ts",
   "exports": {
@@ -21,172 +21,172 @@
       },
       "require": {
         "types": "./index.d.ts",
-        "default": "./stemmer/lib/Snowball.js"
+        "default": "./dist/Snowball.js"
       }
     },
     "./danish": {
       "import": {
-        "types": "./stemmer/lib/languages/danish.d.ts",
-        "default": "./stemmer/lib/languages/danish.mjs"
+        "types": "./dist/languages/danish.d.ts",
+        "default": "./dist/languages/danish.mjs"
       },
       "require": {
-        "types": "./stemmer/lib/languages/danish.d.ts",
-        "default": "./stemmer/lib/languages/danish.js"
+        "types": "./dist/languages/danish.d.ts",
+        "default": "./dist/languages/danish.js"
       }
     },
     "./dutch": {
       "import": {
-        "types": "./stemmer/lib/languages/dutch.d.ts",
-        "default": "./stemmer/lib/languages/dutch.mjs"
+        "types": "./dist/languages/dutch.d.ts",
+        "default": "./dist/languages/dutch.mjs"
       },
       "require": {
-        "types": "./stemmer/lib/languages/dutch.d.ts",
-        "default": "./stemmer/lib/languages/dutch.js"
+        "types": "./dist/languages/dutch.d.ts",
+        "default": "./dist/languages/dutch.js"
       }
     },
     "./english": {
       "import": {
-        "types": "./stemmer/lib/languages/english.d.ts",
-        "default": "./stemmer/lib/languages/english.mjs"
+        "types": "./dist/languages/english.d.ts",
+        "default": "./dist/languages/english.mjs"
       },
       "require": {
-        "types": "./stemmer/lib/languages/english.d.ts",
-        "default": "./stemmer/lib/languages/english.js"
+        "types": "./dist/languages/english.d.ts",
+        "default": "./dist/languages/english.js"
       }
     },
     "./finnish": {
       "import": {
-        "types": "./stemmer/lib/languages/finnish.d.ts",
-        "default": "./stemmer/lib/languages/finnish.mjs"
+        "types": "./dist/languages/finnish.d.ts",
+        "default": "./dist/languages/finnish.mjs"
       },
       "require": {
-        "types": "./stemmer/lib/languages/finnish.d.ts",
-        "default": "./stemmer/lib/languages/finnish.js"
+        "types": "./dist/languages/finnish.d.ts",
+        "default": "./dist/languages/finnish.js"
       }
     },
     "./french": {
       "import": {
-        "types": "./stemmer/lib/languages/french.d.ts",
-        "default": "./stemmer/lib/languages/french.mjs"
+        "types": "./dist/languages/french.d.ts",
+        "default": "./dist/languages/french.mjs"
       },
       "require": {
-        "types": "./stemmer/lib/languages/french.d.ts",
-        "default": "./stemmer/lib/languages/french.js"
+        "types": "./dist/languages/french.d.ts",
+        "default": "./dist/languages/french.js"
       }
     },
     "./german": {
       "import": {
-        "types": "./stemmer/lib/languages/german.d.ts",
-        "default": "./stemmer/lib/languages/german.mjs"
+        "types": "./dist/languages/german.d.ts",
+        "default": "./dist/languages/german.mjs"
       },
       "require": {
-        "types": "./stemmer/lib/languages/german.d.ts",
-        "default": "./stemmer/lib/languages/german.js"
+        "types": "./dist/languages/german.d.ts",
+        "default": "./dist/languages/german.js"
       }
     },
     "./hungarian": {
       "import": {
-        "types": "./stemmer/lib/languages/hungarian.d.ts",
-        "default": "./stemmer/lib/languages/hungarian.mjs"
+        "types": "./dist/languages/hungarian.d.ts",
+        "default": "./dist/languages/hungarian.mjs"
       },
       "require": {
-        "types": "./stemmer/lib/languages/hungarian.d.ts",
-        "default": "./stemmer/lib/languages/hungarian.js"
+        "types": "./dist/languages/hungarian.d.ts",
+        "default": "./dist/languages/hungarian.js"
       }
     },
     "./indonesian": {
       "import": {
-        "types": "./stemmer/lib/languages/indonesian.d.ts",
-        "default": "./stemmer/lib/languages/indonesian.mjs"
+        "types": "./dist/languages/indonesian.d.ts",
+        "default": "./dist/languages/indonesian.mjs"
       },
       "require": {
-        "types": "./stemmer/lib/languages/indonesian.d.ts",
-        "default": "./stemmer/lib/languages/indonesian.js"
+        "types": "./dist/languages/indonesian.d.ts",
+        "default": "./dist/languages/indonesian.js"
       }
     },
     "./italian": {
       "import": {
-        "types": "./stemmer/lib/languages/italian.d.ts",
-        "default": "./stemmer/lib/languages/italian.mjs"
+        "types": "./dist/languages/italian.d.ts",
+        "default": "./dist/languages/italian.mjs"
       },
       "require": {
-        "types": "./stemmer/lib/languages/italian.d.ts",
-        "default": "./stemmer/lib/languages/italian.js"
+        "types": "./dist/languages/italian.d.ts",
+        "default": "./dist/languages/italian.js"
       }
     },
     "./norwegian": {
       "import": {
-        "types": "./stemmer/lib/languages/norwegian.d.ts",
-        "default": "./stemmer/lib/languages/norwegian.mjs"
+        "types": "./dist/languages/norwegian.d.ts",
+        "default": "./dist/languages/norwegian.mjs"
       },
       "require": {
-        "types": "./stemmer/lib/languages/norwegian.d.ts",
-        "default": "./stemmer/lib/languages/norwegian.js"
+        "types": "./dist/languages/norwegian.d.ts",
+        "default": "./dist/languages/norwegian.js"
       }
     },
     "./portuguese": {
       "import": {
-        "types": "./stemmer/lib/languages/portuguese.d.ts",
-        "default": "./stemmer/lib/languages/portuguese.mjs"
+        "types": "./dist/languages/portuguese.d.ts",
+        "default": "./dist/languages/portuguese.mjs"
       },
       "require": {
-        "types": "./stemmer/lib/languages/portuguese.d.ts",
-        "default": "./stemmer/lib/languages/portuguese.js"
+        "types": "./dist/languages/portuguese.d.ts",
+        "default": "./dist/languages/portuguese.js"
       }
     },
     "./romanian": {
       "import": {
-        "types": "./stemmer/lib/languages/romanian.d.ts",
-        "default": "./stemmer/lib/languages/romanian.mjs"
+        "types": "./dist/languages/romanian.d.ts",
+        "default": "./dist/languages/romanian.mjs"
       },
       "require": {
-        "types": "./stemmer/lib/languages/romanian.d.ts",
-        "default": "./stemmer/lib/languages/romanian.js"
+        "types": "./dist/languages/romanian.d.ts",
+        "default": "./dist/languages/romanian.js"
       }
     },
     "./russian": {
       "import": {
-        "types": "./stemmer/lib/languages/russian.d.ts",
-        "default": "./stemmer/lib/languages/russian.mjs"
+        "types": "./dist/languages/russian.d.ts",
+        "default": "./dist/languages/russian.mjs"
       },
       "require": {
-        "types": "./stemmer/lib/languages/russian.d.ts",
-        "default": "./stemmer/lib/languages/russian.js"
+        "types": "./dist/languages/russian.d.ts",
+        "default": "./dist/languages/russian.js"
       }
     },
     "./spanish": {
       "import": {
-        "types": "./stemmer/lib/languages/spanish.d.ts",
-        "default": "./stemmer/lib/languages/spanish.mjs"
+        "types": "./dist/languages/spanish.d.ts",
+        "default": "./dist/languages/spanish.mjs"
       },
       "require": {
-        "types": "./stemmer/lib/languages/spanish.d.ts",
-        "default": "./stemmer/lib/languages/spanish.js"
+        "types": "./dist/languages/spanish.d.ts",
+        "default": "./dist/languages/spanish.js"
       }
     },
     "./swedish": {
       "import": {
-        "types": "./stemmer/lib/languages/swedish.d.ts",
-        "default": "./stemmer/lib/languages/swedish.mjs"
+        "types": "./dist/languages/swedish.d.ts",
+        "default": "./dist/languages/swedish.mjs"
       },
       "require": {
-        "types": "./stemmer/lib/languages/swedish.d.ts",
-        "default": "./stemmer/lib/languages/swedish.js"
+        "types": "./dist/languages/swedish.d.ts",
+        "default": "./dist/languages/swedish.js"
       }
     },
     "./turkish": {
       "import": {
-        "types": "./stemmer/lib/languages/turkish.d.ts",
-        "default": "./stemmer/lib/languages/turkish.mjs"
+        "types": "./dist/languages/turkish.d.ts",
+        "default": "./dist/languages/turkish.mjs"
       },
       "require": {
-        "types": "./stemmer/lib/languages/turkish.d.ts",
-        "default": "./stemmer/lib/languages/turkish.js"
+        "types": "./dist/languages/turkish.d.ts",
+        "default": "./dist/languages/turkish.js"
       }
     }
   },
   "files": [
-    "stemmer/",
+    "dist/",
     "index.mjs",
     "index.d.ts"
   ],
@@ -203,7 +203,7 @@
   },
   "scripts": {
     "build": "node build.js && npm run minify",
-    "minify": "terser stemmer/lib/Snowball.js -o stemmer/lib/Snowball.min.js -c -m --comments '/^!/'",
+    "minify": "terser dist/Snowball.js -o dist/Snowball.min.js -c -m --comments '/^!/'",
     "lint": "eslint stemmer/src/",
     "test": "vitest run"
   },

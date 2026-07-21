@@ -1,4 +1,4 @@
-import Snowball from './stemmer/lib/Snowball.js';
+import Snowball from './dist/Snowball.js';
 
 export default Snowball;
 export { Snowball };

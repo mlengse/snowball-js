@@ -25,6 +25,6 @@ module.exports = [
     },
   },
   {
-    ignores: ["stemmer/lib/**", "node_modules/**"],
+    ignores: ["dist/**", "node_modules/**"],
   },
 ];

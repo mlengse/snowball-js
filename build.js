@@ -4,7 +4,10 @@ const fs = require('fs');
 const path = require('path');
 
 const SRC = path.join(__dirname, 'stemmer', 'src');
-const LIB = path.join(__dirname, 'stemmer', 'lib');
+const DIST = path.join(__dirname, 'dist');
+if (!fs.existsSync(DIST)) {
+  fs.mkdirSync(DIST, { recursive: true });
+}
 
 const license = `/*!
  * Snowball JavaScript Library v0.3
@@ -45,10 +48,10 @@ ${stemFactoryEntries}
 }
 `;
 
-fs.writeFileSync(path.join(__dirname, 'stemmer', 'lib', 'Snowball.js'), output);
-console.log('Build complete: stemmer/lib/Snowball.js');
+fs.writeFileSync(path.join(DIST, 'Snowball.js'), output);
+console.log('Build complete: dist/Snowball.js');
 
-const languagesDir = path.join(__dirname, 'stemmer', 'lib', 'languages');
+const languagesDir = path.join(DIST, 'languages');
 if (!fs.existsSync(languagesDir)) {
   fs.mkdirSync(languagesDir, { recursive: true });
 }
@@ -92,19 +95,19 @@ const exportsField = {
     },
     "require": {
       "types": "./index.d.ts",
-      "default": "./stemmer/lib/Snowball.js"
+      "default": "./dist/Snowball.js"
     }
   }
 };
 languageNames.forEach(l => {
   exportsField[`./${l}`] = {
     "import": {
-      "types": `./stemmer/lib/languages/${l}.d.ts`,
-      "default": `./stemmer/lib/languages/${l}.mjs`
+      "types": `./dist/languages/${l}.d.ts`,
+      "default": `./dist/languages/${l}.mjs`
     },
     "require": {
-      "types": `./stemmer/lib/languages/${l}.d.ts`,
-      "default": `./stemmer/lib/languages/${l}.js`
+      "types": `./dist/languages/${l}.d.ts`,
+      "default": `./dist/languages/${l}.js`
     }
   };
 });
@@ -113,12 +116,12 @@ const pkgPath = path.join(__dirname, 'package.json');
 const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
 pkg.exports = exportsField;
 pkg.files = [
-  "stemmer/",
+  "dist/",
   "index.mjs",
   "index.d.ts"
 ];
 fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + '\n');
-console.log(`Build complete: ${languageNames.length} per-language bundles in stemmer/lib/languages/`);
+console.log(`Build complete: ${languageNames.length} per-language bundles in dist/languages/`);
 console.log('Updated package.json exports field');
 
 function extractBody(src) {

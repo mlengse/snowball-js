@@ -1,4 +1,4 @@
-const Snowball = require("../stemmer/lib/Snowball");
+const Snowball = require("../dist/Snowball");
 
 const testData = {
   danish: [
