@@ -29,12 +29,11 @@
     "build": "node build.js && npm run minify",
     "minify": "terser stemmer/lib/Snowball.js -o stemmer/lib/Snowball.min.js -c -m --comments '/^!/'",
     "lint": "eslint stemmer/src/",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "vitest run"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "eslint": "^10.7.0",
-    "snowball-stemmers": "^0.6.0",
     "terser": "^5.49.0",
     "vitest": "^4.1.10"
   }
