@@ -74,11 +74,11 @@ const testData = {
   indonesian: [
     ["berlari", "lari"], ["berjalan", "jalan"], ["perubahan", "ubah"],
     ["kegiatan", "giat"], ["pembelajaran", "ajar"], ["pengembangan", "embang"],
-    ["masyarakat", "masyarakat"], ["menulis", "ulis"], ["membaca", "baca"],
+    ["masyarakat", "masyarakat"], ["menulis", "tulis"], ["membaca", "baca"],
     ["pendidikan", "didik"], ["kesehatan", "sehat"], ["pertanian", "tani"],
     ["perkembangan", "kembang"], ["pembangunan", "bangun"], ["penggunaan", "guna"],
     ["pelajaran", "ajar"], ["keindahan", "indah"], ["kemajuan", "maju"],
-    ["pengetahuan", "etahu"], ["pengertian", "erti"],
+    ["pengetahuan", "tahu"], ["pengertian", "erti"],
   ],
   italian: [
     ["gioca", "gioc"], ["giocare", "gioc"], ["giocando", "gioc"], ["giocato", "gioc"],

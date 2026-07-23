@@ -6,13 +6,14 @@ function IndonesianStemmer() {
             r_SUFFIX_AN_OK), new Among("kan", 1, 1, r_SUFFIX_KAN_OK)], a_3 = [
                 new Among("di", -1, 1), new Among("ke", -1, 2), new Among("me",
                     -1, 1), new Among("mem", 2, 5), new Among("men", 2, 1),
-                new Among("meng", 4, 1), new Among("meny", 4, 3, r_VOWEL),
+                new Among("meng", 4, 1), new Among("menge", 5, 1, r_CONSONANT_AFTER_E), new Among("meny", 4, 3, r_VOWEL),
                 new Among("pem", -1, 6), new Among("pen", -1, 2), new Among(
-                    "peng", 8, 2), new Among("peny", 8, 4, r_VOWEL), new Among(
+                    "peng", 9, 2), new Among("penge", 10, 2, r_CONSONANT_AFTER_E), new Among("peny", 9, 4, r_VOWEL), new Among(
                         "ter", -1, 1)], a_4 = [new Among("be", -1, 3, r_KER),
                         new Among("belajar", 0, 4), new Among("ber", 0, 3), new Among(
-                            "pe", -1, 1), new Among("pelajar", 3, 2), new Among("per", 3, 1)], g_vowel = [17, 65, 16], I_prefix, I_measure, sbp = new SnowballProgram();
+                            "pe", -1, 1), new Among("pelajar", 3, 2), new Among("per", 3, 1)], g_vowel = [17, 65, 16], I_prefix, I_measure, matched_prefix, exception_words = ["terampil"], saved_word, sbp = new SnowballProgram();
     this.setCurrent = function (word) {
+        saved_word = word;
         sbp.setCurrent(word);
     };
     this.getCurrent = function () {
@@ -92,6 +93,14 @@ function IndonesianStemmer() {
         return true;
     }
 
+    function r_CONSONANT_AFTER_E() {
+        var c = sbp.cursor;
+        sbp.cursor = c + 5;
+        var result = sbp.out_grouping(g_vowel, 97, 117);
+        sbp.cursor = c;
+        return result;
+    }
+
     function r_KER() {
         if (!(sbp.out_grouping(g_vowel, 97, 117))) {
             return false;
@@ -102,36 +111,82 @@ function IndonesianStemmer() {
         return true;
     }
 
+    function r_detect_matched_prefix() {
+        var c = sbp.cursor;
+        if (sbp.eq_s_b(5, "menge")) return "menge";
+        if (sbp.eq_s_b(5, "penge")) return "penge";
+        if (sbp.eq_s_b(4, "meng")) return "meng";
+        if (sbp.eq_s_b(3, "men")) return "men";
+        if (sbp.eq_s_b(3, "mem")) return "mem";
+        if (sbp.eq_s_b(3, "ter")) return "ter";
+        if (sbp.eq_s_b(4, "peng")) return "peng";
+        if (sbp.eq_s_b(3, "pen")) return "pen";
+        if (sbp.eq_s_b(3, "pem")) return "pem";
+        if (sbp.eq_s_b(2, "me")) return "me";
+        if (sbp.eq_s_b(2, "di")) return "di";
+        if (sbp.eq_s_b(2, "ke")) return "ke";
+        sbp.cursor = c;
+        return null;
+    }
+
+    function r_restore_consonant() {
+        if (!matched_prefix) return;
+        var isNasal = (matched_prefix == "mem" || matched_prefix == "men" ||
+                       matched_prefix == "meng" || matched_prefix == "pem" ||
+                       matched_prefix == "pen" || matched_prefix == "peng");
+        if (!isNasal) return;
+        if (matched_prefix == "meng" || matched_prefix == "peng") return;
+        var c = sbp.cursor;
+        if (!sbp.in_grouping(g_vowel, 97, 117)) {
+            sbp.cursor = c;
+            return;
+        }
+        sbp.cursor = c;
+        var consonant;
+        switch (matched_prefix) {
+            case "mem": consonant = "p"; break;
+            case "men": consonant = "t"; break;
+            case "pem": consonant = "m"; break;
+            case "pen": consonant = "t"; break;
+        }
+        sbp.insert(c, c, consonant);
+    }
+
     function r_remove_first_order_prefix() {
         var among_var;
         sbp.bra = sbp.cursor;
-        among_var = sbp.find_among(a_3, 12);
+        among_var = sbp.find_among(a_3, 14);
         if (among_var == 0) {
             return false;
         }
         sbp.ket = sbp.cursor;
         switch (among_var) {
             case 1:
+                matched_prefix = r_detect_matched_prefix();
                 sbp.slice_del();
                 I_prefix = 1;
                 I_measure -= 1;
                 break;
             case 2:
+                matched_prefix = r_detect_matched_prefix();
                 sbp.slice_del();
                 I_prefix = 3;
                 I_measure -= 1;
                 break;
             case 3:
+                matched_prefix = "me";
                 I_prefix = 1;
                 sbp.slice_from("s");
                 I_measure -= 1;
                 break;
             case 4:
+                matched_prefix = "meny";
                 I_prefix = 3;
                 sbp.slice_from("s");
                 I_measure -= 1;
                 break;
             case 5:
+                matched_prefix = "mem";
                 I_prefix = 1;
                 I_measure -= 1;
                 lab0: {
@@ -150,22 +205,10 @@ function IndonesianStemmer() {
                 }
                 break;
             case 6:
+                matched_prefix = "pem";
                 I_prefix = 3;
                 I_measure -= 1;
-                lab2: {
-                    var v_3 = sbp.cursor;
-                    lab3: {
-                        var v_4 = sbp.cursor;
-                        if (!(sbp.in_grouping(g_vowel, 97, 117))) {
-                            break lab3;
-                        }
-                        sbp.cursor = v_4;
-                        sbp.slice_from("p");
-                        break lab2;
-                    }
-                    sbp.cursor = v_3;
-                    sbp.slice_del();
-                }
+                sbp.slice_del();
                 break;
         }
         return true;
@@ -205,6 +248,9 @@ function IndonesianStemmer() {
 
     this.stem = function () {
         I_measure = 0;
+        for (var i = 0; i < exception_words.length; i++) {
+            if (saved_word == exception_words[i]) return false;
+        }
         var v_1 = sbp.cursor;
         lab0: {
             while (true) {
@@ -256,6 +302,7 @@ function IndonesianStemmer() {
                 if (!r_remove_first_order_prefix()) {
                     break lab5;
                 }
+                r_restore_consonant();
                 var v_8 = sbp.cursor;
                 lab6: {
                     var v_9 = sbp.cursor;
