@@ -3,7 +3,7 @@
   <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <title>Snowball Sample</title>
-    <script src="stemmer/lib/Snowball.min.js" type="text/javascript"></script>
+    <script src="dist/Snowball.js" type="text/javascript"></script>
     <script type="text/javascript">
       var Stem = function(lng) {
         var testStemmer = new Snowball(lng);
@@ -32,6 +32,7 @@
         println("swedish", "ackompanjerade");
         println("romanian", "ab\u0103tut\u0103");
         println("turkish", "abart\u0131ld\u0131\u011f\u0131n\u0131");
+        println("indonesian", "mempertanggungjawabkan");
       }
     </script>
   </head>
@@ -51,5 +52,6 @@
     <div id="swedish"></div>
     <div id="romanian"></div>
     <div id="turkish"></div>
+    <div id="indonesian"></div>
   </body>
 </html>

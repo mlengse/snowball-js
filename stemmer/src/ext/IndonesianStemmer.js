@@ -1,5 +1,3 @@
-// @ts-check
-/**@constructor*/
 function IndonesianStemmer() {
     var a_0 = [new Among("kah", -1, 1), new Among("lah", -1, 1),
     new Among("pun", -1, 1)], a_1 = [new Among("nya", -1, 1),

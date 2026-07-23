@@ -199,12 +199,13 @@
   },
   "homepage": "https://github.com/mlengse/snowball-js#readme",
   "engines": {
-    "node": ">=0"
+    "node": ">=14"
   },
   "scripts": {
     "build": "node build.js && npm run minify",
     "minify": "terser dist/Snowball.js -o dist/Snowball.min.js -c -m --comments '/^!/'",
     "lint": "eslint stemmer/src/",
+    "pretest": "npm run build",
     "test": "vitest run"
   },
   "devDependencies": {
