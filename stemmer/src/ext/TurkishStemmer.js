@@ -817,7 +817,7 @@ function TurkishStemmer() {
 			sbp.cursor++;
 		}
 		I_strlen = n1;
-		if (I_strlen != sbp.limit)
+		if (I_strlen !== sbp.limit)
 			return true;
 		sbp.cursor = v_1;
 		return false;

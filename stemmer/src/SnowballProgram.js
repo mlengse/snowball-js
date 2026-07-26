@@ -88,7 +88,7 @@ function SnowballProgram() {
 			if (this.limit - this.cursor < s_size)
 				return false;
 			for (var i = 0; i < s_size; i++)
-				if (current.charCodeAt(this.cursor + i) != s.charCodeAt(i))
+				if (current.charCodeAt(this.cursor + i) !== s.charCodeAt(i))
 					return false;
 			this.cursor += s_size;
 			return true;
@@ -97,7 +97,7 @@ function SnowballProgram() {
 			if (this.cursor - this.limit_backward < s_size)
 				return false;
 			for (var i = 0; i < s_size; i++)
-				if (current.charCodeAt(this.cursor - s_size + i) != s
+				if (current.charCodeAt(this.cursor - s_size + i) !== s
 						.charCodeAt(i))
 					return false;
 			this.cursor -= s_size;
@@ -110,7 +110,7 @@ function SnowballProgram() {
 						? common_i
 						: common_j, w = v[k];
 				for (var i2 = common; i2 < w.s_size; i2++) {
-					if (c + common == l) {
+					if (c + common === l) {
 						diff = -1;
 						break;
 					}
@@ -127,7 +127,7 @@ function SnowballProgram() {
 					common_i = common;
 				}
 				if (j - i <= 1) {
-					if (i > 0 || j == i || first_key_inspected)
+					if (i > 0 || j === i || first_key_inspected)
 						break;
 					first_key_inspected = true;
 				}
@@ -155,7 +155,7 @@ function SnowballProgram() {
 						? common_i
 						: common_j, w = v[k];
 				for (var i2 = w.s_size - 1 - common; i2 >= 0; i2--) {
-					if (c - common == lb) {
+					if (c - common === lb) {
 						diff = -1;
 						break;
 					}
@@ -172,7 +172,7 @@ function SnowballProgram() {
 					common_i = common;
 				}
 				if (j - i <= 1) {
-					if (i > 0 || j == i || first_key_inspected)
+					if (i > 0 || j === i || first_key_inspected)
 						break;
 					first_key_inspected = true;
 				}

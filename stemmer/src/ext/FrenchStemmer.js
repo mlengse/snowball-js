@@ -398,7 +398,7 @@ function FrenchStemmer() {
 			return false;
 		}
 		sbp.bra = sbp.cursor;
-		if (among_var == 1) {
+		if (among_var === 1) {
 			if (!sbp.out_grouping_b(g_v, 97, 251)) {
 				sbp.limit_backward = v_1;
 				return false;

@@ -79,50 +79,10 @@ ${indent(body, 1)}
     `import ${className} from './${langName}.js';\nexport default ${className};\nexport { ${className} };\n`
   );
   fs.writeFileSync(path.join(languagesDir, `${langName}.d.ts`),
-    `export interface Stemmer {\n  setCurrent(word: string): void;\n  getCurrent(): string | null;\n  stem(): boolean;\n}\n\nexport default function ${className}(): Stemmer;\n`
+    `export interface Stemmer {\n  /** Sets the word to be stemmed. */\n  setCurrent(word: string): void;\n  /** Returns the stemmed word, or null if called again without setCurrent. */\n  getCurrent(): string | null;\n  /** Performs stemming on the current word. Returns true if stemming occurred. Call getCurrent() to retrieve the result. */\n  stem(): boolean;\n}\n\nexport default function ${className}(): Stemmer;\n`
   );
 });
-
-const langExports = languageNames.map(l =>
-  `    "./${l}": {\n      "import": "./languages/${l}.mjs",\n      "require": "./languages/${l}.js"\n    }`
-).join(',\n');
-
-const exportsField = {
-  ".": {
-    "import": {
-      "types": "./index.d.ts",
-      "default": "./index.mjs"
-    },
-    "require": {
-      "types": "./index.d.ts",
-      "default": "./dist/Snowball.js"
-    }
-  }
-};
-languageNames.forEach(l => {
-  exportsField[`./${l}`] = {
-    "import": {
-      "types": `./dist/languages/${l}.d.ts`,
-      "default": `./dist/languages/${l}.mjs`
-    },
-    "require": {
-      "types": `./dist/languages/${l}.d.ts`,
-      "default": `./dist/languages/${l}.js`
-    }
-  };
-});
-
-const pkgPath = path.join(__dirname, 'package.json');
-const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
-pkg.exports = exportsField;
-pkg.files = [
-  "dist/",
-  "index.mjs",
-  "index.d.ts"
-];
-fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + '\n');
 console.log(`Build complete: ${languageNames.length} per-language bundles in dist/languages/`);
-console.log('Updated package.json exports field');
 
 function extractBody(src) {
   const lines = src.split('\n');

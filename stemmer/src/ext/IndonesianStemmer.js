@@ -21,7 +21,7 @@ function IndonesianStemmer() {
     };
     function r_remove_particle() {
         sbp.ket = sbp.cursor;
-        if (sbp.find_among_b(a_0, 3) == 0) {
+        if (sbp.find_among_b(a_0, 3) === 0) {
             return false;
         }
         sbp.bra = sbp.cursor;
@@ -32,7 +32,7 @@ function IndonesianStemmer() {
 
     function r_remove_possessive_pronoun() {
         sbp.ket = sbp.cursor;
-        if (sbp.find_among_b(a_1, 3) == 0) {
+        if (sbp.find_among_b(a_1, 3) === 0) {
             return false;
         }
         sbp.bra = sbp.cursor;
@@ -42,17 +42,17 @@ function IndonesianStemmer() {
     }
 
     function r_SUFFIX_KAN_OK() {
-        if (!(I_prefix != 3)) {
+        if (!(I_prefix !== 3)) {
             return false;
         }
-        if (!(I_prefix != 2)) {
+        if (!(I_prefix !== 2)) {
             return false;
         }
         return true;
     }
 
     function r_SUFFIX_AN_OK() {
-        if (!(I_prefix != 1)) {
+        if (!(I_prefix !== 1)) {
             return false;
         }
         return true;
@@ -77,7 +77,7 @@ function IndonesianStemmer() {
 
     function r_remove_suffix() {
         sbp.ket = sbp.cursor;
-        if (sbp.find_among_b(a_2, 3) == 0) {
+        if (sbp.find_among_b(a_2, 3) === 0) {
             return false;
         }
         sbp.bra = sbp.cursor;
@@ -131,11 +131,11 @@ function IndonesianStemmer() {
 
     function r_restore_consonant() {
         if (!matched_prefix) return;
-        var isNasal = (matched_prefix == "mem" || matched_prefix == "men" ||
-                       matched_prefix == "meng" || matched_prefix == "pem" ||
-                       matched_prefix == "pen" || matched_prefix == "peng");
+        var isNasal = (matched_prefix === "mem" || matched_prefix === "men" ||
+                       matched_prefix === "meng" || matched_prefix === "pem" ||
+                       matched_prefix === "pen" || matched_prefix === "peng");
         if (!isNasal) return;
-        if (matched_prefix == "meng" || matched_prefix == "peng") return;
+        if (matched_prefix === "meng" || matched_prefix === "peng") return;
         var c = sbp.cursor;
         if (!sbp.in_grouping(g_vowel, 97, 117)) {
             sbp.cursor = c;
@@ -156,7 +156,7 @@ function IndonesianStemmer() {
         var among_var;
         sbp.bra = sbp.cursor;
         among_var = sbp.find_among(a_3, 14);
-        if (among_var == 0) {
+        if (among_var === 0) {
             return false;
         }
         sbp.ket = sbp.cursor;
@@ -218,7 +218,7 @@ function IndonesianStemmer() {
         var among_var;
         sbp.bra = sbp.cursor;
         among_var = sbp.find_among(a_4, 6);
-        if (among_var == 0) {
+        if (among_var === 0) {
             return false;
         }
         sbp.ket = sbp.cursor;
@@ -249,9 +249,10 @@ function IndonesianStemmer() {
     this.stem = function () {
         I_measure = 0;
         for (var i = 0; i < exception_words.length; i++) {
-            if (saved_word == exception_words[i]) return false;
+            if (saved_word === exception_words[i]) return false;
         }
         var v_1 = sbp.cursor;
+        /* eslint-disable-next-line no-unused-labels */
         lab0: {
             while (true) {
                 var v_2 = sbp.cursor;

@@ -187,7 +187,7 @@ function HungarianStemmer() {
 		if (among_var) {
 			sbp.bra = sbp.cursor;
 			if (r_R1()) {
-				if (among_var == 1 || among_var == 2)
+				if (among_var === 1 || among_var === 2)
 					if (!r_double())
 						return;
 				sbp.slice_del();
@@ -253,7 +253,7 @@ function HungarianStemmer() {
 		if (among_var) {
 			sbp.bra = sbp.cursor;
 			if (r_R1()) {
-				if (among_var == 1 || among_var == 2)
+				if (among_var === 1 || among_var === 2)
 					if (!r_double())
 						return;
 				sbp.slice_del();

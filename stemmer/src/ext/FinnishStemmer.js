@@ -246,7 +246,7 @@ function FinnishStemmer() {
 			if (among_var) {
 				sbp.bra = sbp.cursor;
 				sbp.limit_backward = v_1;
-				if (among_var == 1) {
+				if (among_var === 1) {
 					v_2 = sbp.limit - sbp.cursor;
 					if (sbp.eq_s_b(2, "po"))
 						return;
@@ -295,7 +295,7 @@ function FinnishStemmer() {
 						if (among_var) {
 							sbp.bra = sbp.cursor;
 							sbp.limit_backward = v_4;
-							if (among_var == 1) {
+							if (among_var === 1) {
 								v_5 = sbp.limit - sbp.cursor;
 								if (sbp.eq_s_b(2, "po"))
 									return;

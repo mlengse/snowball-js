@@ -159,7 +159,7 @@ function EnglishStemmer() {
 		among_var = sbp.find_among_b(a_1, 3);
 		if (among_var) {
 			sbp.bra = sbp.cursor;
-			if (among_var == 1)
+			if (among_var === 1)
 				sbp.slice_del();
 		} else
 			sbp.cursor = sbp.limit - v_1;
@@ -230,7 +230,7 @@ function EnglishStemmer() {
 								}
 								break;
 							case 3 :
-								if (sbp.cursor == I_p1) {
+								if (sbp.cursor === I_p1) {
 									v_4 = sbp.limit - sbp.cursor;
 									if (r_shortv()) {
 										sbp.cursor = sbp.limit - v_4;

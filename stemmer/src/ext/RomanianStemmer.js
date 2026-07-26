@@ -387,6 +387,7 @@ function RomanianStemmer() {
 							if (!sbp.eq_s_b(1, "u"))
 								break;
 						}
+						// falls through
 					case 2 :
 						sbp.slice_del();
 						break;
@@ -401,7 +402,7 @@ function RomanianStemmer() {
 		among_var = sbp.find_among_b(a_5, 5);
 		if (among_var) {
 			sbp.bra = sbp.cursor;
-			if (r_RV() && among_var == 1)
+			if (r_RV() && among_var === 1)
 				sbp.slice_del();
 		}
 	}

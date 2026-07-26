@@ -274,7 +274,7 @@ function SpanishStemmer() {
 		var among_var = sbp.find_among_b(a, n);
 		if (among_var) {
 			sbp.bra = sbp.cursor;
-			if (among_var == 1 && r_R2())
+			if (among_var === 1 && r_R2())
 				sbp.slice_del();
 		}
 		return false;
@@ -332,7 +332,7 @@ function SpanishStemmer() {
 						sbp.bra = sbp.cursor;
 						if (r_R2()) {
 							sbp.slice_del();
-							if (among_var == 1) {
+							if (among_var === 1) {
 								sbp.ket = sbp.cursor;
 								if (sbp.eq_s_b(2, "at")) {
 									sbp.bra = sbp.cursor;
@@ -370,7 +370,7 @@ function SpanishStemmer() {
 			sbp.limit_backward = v_1;
 			if (among_var) {
 				sbp.bra = sbp.cursor;
-				if (among_var == 1) {
+				if (among_var === 1) {
 					if (!sbp.eq_s_b(1, "u"))
 						return false;
 					sbp.slice_del();
@@ -402,6 +402,7 @@ function SpanishStemmer() {
 						} else
 							sbp.cursor = sbp.limit - v_2;
 						sbp.bra = sbp.cursor;
+						// falls through
 					case 2 :
 						sbp.slice_del();
 						break;

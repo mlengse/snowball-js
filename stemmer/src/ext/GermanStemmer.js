@@ -237,7 +237,7 @@ function GermanStemmer() {
 						among_var = sbp.find_among_b(a_3, 2);
 						if (among_var) {
 							sbp.bra = sbp.cursor;
-							if (r_R2() && among_var == 1)
+							if (r_R2() && among_var === 1)
 								sbp.slice_del();
 						}
 						break;
