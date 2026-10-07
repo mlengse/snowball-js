@@ -87,6 +87,6 @@ alone to keep this fix minimal. Worth its own assessment.
 
 ## Follow-ups
 
-- Consider exporting the `Stemmer` interface from the per-language `.d.ts` templates in `build.js` so the README's TypeScript example compiles.
-- Add a smoke test that runs `tsc --noEmit` against the shipped `.d.ts` files, to catch declaration/runtime drift like this automatically.
+- ~~Consider exporting the `Stemmer` interface from the per-language `.d.ts` templates in `build.js` so the README's TypeScript example compiles.~~ **RETRACTED 2026-10-07 — this was never broken.** The generated `.d.ts` already declared `export interface Stemmer`, and the README's TypeScript example compiles clean under `tsc 5.9.3` (`strict` + `nodenext`) against the packed 1.0.2 tarball, confirmed via `--traceResolution`. A negative control (`s.bogusMethod()`, `const n: number = s.getCurrent()`) errored as expected, proving the declarations load rather than degrading to `any`. The original claim was an unverified guess. No action needed.
+- Add a smoke test that runs `tsc --noEmit` against the shipped `.d.ts` files, to catch declaration/runtime drift like this automatically. **DONE** — see `../../dts-missing-named-exports/`. `typescript` is now a devDependency with an `npm run typecheck` script wired into `prepublishOnly`.
 - The published `1.0.1` remains broken for per-language imports; this needs a patch release (`1.0.2`) to reach consumers.

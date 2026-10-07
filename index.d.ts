@@ -28,3 +28,4 @@ export type Language =
 declare function Snowball(language: Language): Stemmer;
 
 export default Snowball;
+export { Snowball };

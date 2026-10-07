@@ -205,14 +205,16 @@
     "build": "node build.js && npm run minify",
     "minify": "terser dist/Snowball.js -o dist/Snowball.min.js -c -m --comments '/^!/'",
     "lint": "eslint stemmer/src/",
+    "typecheck": "tsc -p tsconfig.json",
     "pretest": "npm run build",
-    "prepublishOnly": "npm run build && npm test",
+    "prepublishOnly": "npm run build && npm test && npm run typecheck",
     "test": "vitest run"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "eslint": "^10.7.0",
     "terser": "^5.49.0",
+    "typescript": "^5.9.3",
     "vitest": "^4.1.10"
   }
 }

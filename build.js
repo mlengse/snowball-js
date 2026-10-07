@@ -81,7 +81,7 @@ ${indent(body, 1)}
     `import ${className} from './${langName}.js';\nexport default ${className};\nexport { ${className} };\n`
   );
   fs.writeFileSync(path.join(languagesDir, `${langName}.d.ts`),
-    `export interface Stemmer {\n  /** Sets the word to be stemmed. */\n  setCurrent(word: string): void;\n  /** Returns the stemmed word, or null if called again without setCurrent. */\n  getCurrent(): string | null;\n  /** Performs stemming on the current word. Returns true if stemming occurred. Call getCurrent() to retrieve the result. */\n  stem(): boolean;\n}\n\nexport default function ${className}(): Stemmer;\n`
+    `export interface Stemmer {\n  /** Sets the word to be stemmed. */\n  setCurrent(word: string): void;\n  /** Returns the stemmed word, or null if called again without setCurrent. */\n  getCurrent(): string | null;\n  /** Performs stemming on the current word. Returns true if stemming occurred. Call getCurrent() to retrieve the result. */\n  stem(): boolean;\n}\n\nexport default function ${className}(): Stemmer;\nexport { ${className} };\n`
   );
 });
 console.log(`Build complete: ${languageNames.length} per-language bundles in dist/languages/`);
