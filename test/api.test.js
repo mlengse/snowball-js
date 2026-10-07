@@ -1,5 +1,21 @@
 const Snowball = require("../dist/Snowball");
 
+const LANGUAGES = [
+  "danish", "dutch", "english", "finnish", "french", "german",
+  "hungarian", "indonesian", "italian", "norwegian", "portuguese",
+  "romanian", "russian", "spanish", "swedish", "turkish",
+];
+
+function isStemmer(value) {
+  return (
+    value !== null &&
+    value !== undefined &&
+    typeof value.setCurrent === "function" &&
+    typeof value.getCurrent === "function" &&
+    typeof value.stem === "function"
+  );
+}
+
 describe("Snowball API", () => {
   describe("constructor", () => {
     it("returns a stemmer instance for each supported language", () => {
@@ -93,6 +109,31 @@ describe("Snowball API", () => {
       const second = stemmer.getCurrent();
       expect(first).toBe("run");
       expect(second).toBe("cat");
+    });
+  });
+
+  describe("per-language entrypoints", () => {
+    it("are callable as factories, matching their .d.ts and README", () => {
+      for (const lang of LANGUAGES) {
+        const LanguageStemmer = require(`../dist/languages/${lang}`);
+        const stemmer = LanguageStemmer();
+        expect(isStemmer(stemmer), `${lang} factory call`).toBe(true);
+      }
+    });
+
+    it("are also usable with new", () => {
+      for (const lang of LANGUAGES) {
+        const LanguageStemmer = require(`../dist/languages/${lang}`);
+        expect(isStemmer(new LanguageStemmer()), `${lang} new`).toBe(true);
+      }
+    });
+
+    it("produce a working stemmer via the factory call", () => {
+      const EnglishStemmer = require("../dist/languages/english");
+      const stemmer = EnglishStemmer();
+      stemmer.setCurrent("running");
+      expect(stemmer.stem()).toBe(true);
+      expect(stemmer.getCurrent()).toBe("run");
     });
   });
 });

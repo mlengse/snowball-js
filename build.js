@@ -70,6 +70,8 @@ module.exports = ${className};
 ${indent(among, 0)}
 ${indent(snowballProgram, 0)}
 function ${className}() {
+	if (!(this instanceof ${className}))
+		return new ${className}();
 ${indent(body, 1)}
 }
 `;

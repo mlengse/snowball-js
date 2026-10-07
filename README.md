@@ -95,7 +95,7 @@ stemmer.stem();
 npm install
 npm run build    # Bundle stemmer/src/ → dist/
 npm run lint     # Run ESLint
-npm run test     # Run test suite (339 tests)
+npm run test     # Run test suite (418 tests)
 ```
 
 ## License
