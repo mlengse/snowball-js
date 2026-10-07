@@ -1,50 +1,40 @@
 /**
- * Type-level regression test for the per-language bundles.
+ * Type-level regression test for the CommonJS surface of a generated per-language bundle.
  *
- * Guards the drift where each dist/languages/*.mjs exported a named binding
- * (`export { EnglishStemmer }`) that the generated .d.ts omitted, so
- * `import { EnglishStemmer } from '@mlengse/snowball-js/english'` was rejected
- * by TypeScript despite working at runtime.
- *
- * Compiled by `npm run typecheck`; must produce zero errors. The
- * `@ts-expect-error` directives are the negative control - see
- * index.test-d.ts for the rationale.
+ * Compiled by `tsconfig.json` in CJS resolution mode against the generated `export =`
+ * declaration. The ESM-side shape is pinned in types/esm/per-language.test-d.mts.
  */
 
-import EnglishStemmer, { EnglishStemmer as NamedEnglishStemmer } from "../dist/languages/english.js";
-import type { Stemmer } from "../dist/languages/english.js";
+import EnglishStemmer from "@mlengse/snowball-js/english";
+import EnglishStemmerRequire = require("@mlengse/snowball-js/english");
+import type { Stemmer } from "@mlengse/snowball-js/english";
 
-// Per-language: default import (documented form) returns a Stemmer.
+// Per-language: default import (CJS interop) returns a Stemmer.
 const viaDefault: Stemmer = EnglishStemmer();
 viaDefault.setCurrent("running");
 viaDefault.stem();
 const viaDefaultResult: string | null = viaDefault.getCurrent();
 
-// Per-language: the named export must exist and behave identically.
-const viaNamed: Stemmer = NamedEnglishStemmer();
-viaNamed.setCurrent("running");
-viaNamed.stem();
-const viaNamedResult: string | null = viaNamed.getCurrent();
+// Per-language: the `import = require` form returns a Stemmer.
+const viaRequire: Stemmer = EnglishStemmerRequire();
+viaRequire.setCurrent("running");
+viaRequire.stem();
+const viaRequireResult: string | null = viaRequire.getCurrent();
 
 // The two forms must agree.
-const formsAgree: boolean = viaDefaultResult === viaNamedResult;
+const formsAgree: boolean = viaDefaultResult === viaRequireResult;
 
-// Stemmer is exported as a type from the per-language bundle (this was the
-// claim the original follow-up made wrongly - verified true, now pinned).
-const typed: Stemmer = viaNamed;
-
-// Negative control: these must NOT compile, so the positive assertions above
-// cannot pass vacuously via `any`.
+// Negative control: these must NOT compile, so the positive assertions above cannot pass
+// vacuously via `any`.
 // @ts-expect-error - `bogusMethod` is not part of the Stemmer interface
-const bogusMember = viaNamed.bogusMethod();
+const bogusMember = viaDefault.bogusMethod();
 // @ts-expect-error - getCurrent() returns `string | null`, not `number`
-const wrongType: number = viaNamed.getCurrent();
+const wrongType: number = viaDefault.getCurrent();
 
-export type PerLanguageSurface = {
+export type PerLanguageCjsSurface = {
   viaDefaultResult: string | null;
-  viaNamedResult: string | null;
+  viaRequireResult: string | null;
   formsAgree: boolean;
-  typed: Stemmer;
   bogusMember: typeof bogusMember;
   wrongType: typeof wrongType;
 };

@@ -80,8 +80,26 @@ ${indent(body, 1)}
   fs.writeFileSync(path.join(languagesDir, `${langName}.mjs`),
     `import ${className} from './${langName}.js';\nexport default ${className};\nexport { ${className} };\n`
   );
+  const stemmerInterface =
+    `interface Stemmer {\n` +
+    `  /** Sets the word to be stemmed. */\n` +
+    `  setCurrent(word: string): void;\n` +
+    `  /** Returns the stemmed word, or null if called again without setCurrent. */\n` +
+    `  getCurrent(): string | null;\n` +
+    `  /** Performs stemming on the current word. Returns true if stemming occurred. Call getCurrent() to retrieve the result. */\n` +
+    `  stem(): boolean;\n` +
+    `}\n`;
+
+  // ES module declaration, referenced by the exports map's `import` condition.
+  fs.writeFileSync(path.join(languagesDir, `${langName}.d.mts`),
+    `export ${stemmerInterface}\ndeclare function ${className}(): Stemmer;\nexport default ${className};\nexport { ${className} };\n`
+  );
+
+  // CommonJS declaration, referenced by the exports map's `require` condition. The bundle
+  // does `module.exports = ${className}`, so the callable is described with `export =` and
+  // its types travel through a merged namespace.
   fs.writeFileSync(path.join(languagesDir, `${langName}.d.ts`),
-    `export interface Stemmer {\n  /** Sets the word to be stemmed. */\n  setCurrent(word: string): void;\n  /** Returns the stemmed word, or null if called again without setCurrent. */\n  getCurrent(): string | null;\n  /** Performs stemming on the current word. Returns true if stemming occurred. Call getCurrent() to retrieve the result. */\n  stem(): boolean;\n}\n\nexport default function ${className}(): Stemmer;\nexport { ${className} };\n`
+    `declare function ${className}(): ${className}.Stemmer;\n\ndeclare namespace ${className} {\n${indent(stemmerInterface, 1)}}\n\nexport = ${className};\n`
   );
 });
 console.log(`Build complete: ${languageNames.length} per-language bundles in dist/languages/`);

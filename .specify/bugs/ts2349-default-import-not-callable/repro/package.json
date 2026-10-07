@@ -1,0 +1,6 @@
+{
+  "name": "snowball-js-ts2349-repro",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Disposable scratch project that consumes the copied @mlengse/snowball-js package via node_modules, NOT via package self-reference."
+}

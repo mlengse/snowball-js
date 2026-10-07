@@ -1,0 +1,6 @@
+{
+  "name": "ts2349-verify-consumer",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Scratch consumer for verifying @mlengse/snowball-js@1.0.2 across the import/require matrix."
+}

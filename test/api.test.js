@@ -137,3 +137,27 @@ describe("Snowball API", () => {
     });
   });
 });
+
+describe("entrypoint export parity (runtime)", () => {
+  it("root ESM entry exposes a callable default and a matching named export", async () => {
+    const mod = await import("../index.mjs");
+    expect(typeof mod.default).toBe("function");
+    expect(mod.Snowball).toBe(mod.default);
+    const stemmer = mod.Snowball("english");
+    stemmer.setCurrent("running");
+    stemmer.stem();
+    expect(stemmer.getCurrent()).toBe("run");
+  });
+
+  it.each(LANGUAGES)(
+    "per-language ESM entry %s exposes a callable default and a matching named export",
+    async (lang) => {
+      const mod = await import(`../dist/languages/${lang}.mjs`);
+      expect(typeof mod.default).toBe("function");
+      const named = Object.keys(mod).find((key) => key !== "default");
+      expect(named, `${lang} named export`).toBeDefined();
+      expect(mod[named]).toBe(mod.default);
+      expect(isStemmer(mod.default()), `${lang} factory call`).toBe(true);
+    }
+  );
+});
