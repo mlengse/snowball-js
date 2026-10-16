@@ -57,7 +57,7 @@ if (!fs.existsSync(languagesDir)) {
 }
 
 const languageNames = [];
-stemmers.forEach((src, i) => {
+stemmers.forEach(src => {
   const match = src.match(/function\s+(\w+Stemmer)\s*\(/);
   const className = match[1];
   const langName = className.replace('Stemmer', '').toLowerCase();
