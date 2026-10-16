@@ -194,9 +194,8 @@ function SnowballProgram() {
 			}
 		},
 		replace_s : function(c_bra, c_ket, s) {
-			var adjustment = s.length - (c_ket - c_bra), left = current
-					.substring(0, c_bra), right = current.substring(c_ket);
-			current = left + s + right;
+			var adjustment = s.length - (c_ket - c_bra);
+			current = current.slice(0, c_bra) + s + current.slice(c_ket);
 			this.limit += adjustment;
 			if (this.cursor >= c_ket)
 				this.cursor += adjustment;
