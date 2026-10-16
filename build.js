@@ -3,6 +3,8 @@
 const fs = require('fs');
 const path = require('path');
 
+const STEMMER_FN_REGEX = /function\s+\w+Stemmer\s*\(/;
+
 const SRC = path.join(__dirname, 'stemmer', 'src');
 const DIST = path.join(__dirname, 'dist');
 if (!fs.existsSync(DIST)) {
@@ -111,7 +113,7 @@ function extractBody(src) {
   const body = [];
   for (const line of lines) {
     if (!started) {
-      if (line.match(/function\s+\w+Stemmer\s*\(/)) {
+      if (STEMMER_FN_REGEX.test(line)) {
         started = true;
         depth = 0;
       } else {
