@@ -3,7 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const STEMMER_FN_REGEX = /function\s+\w+Stemmer\s*\(/;
+const STEMMER_FN_REGEX = /function\s+(\w+Stemmer)\s*\(/;
 
 const SRC = path.join(__dirname, 'stemmer', 'src');
 const DIST = path.join(__dirname, 'dist');
@@ -30,7 +30,7 @@ const stemmers = fs.readdirSync(extDir)
   .map(f => fs.readFileSync(path.join(extDir, f), 'utf8'));
 
 const stemFactoryEntries = stemmers.map(src => {
-  const match = src.match(/function\s+(\w+Stemmer)\s*\(/);
+  const match = src.match(STEMMER_FN_REGEX);
   const name = match[1];
   return `\t\t${name} : function() {\n${indent(extractBody(src), 2)}\n\t\t}`;
 }).join(',\n');
@@ -60,7 +60,7 @@ if (!fs.existsSync(languagesDir)) {
 
 const languageNames = [];
 stemmers.forEach(src => {
-  const match = src.match(/function\s+(\w+Stemmer)\s*\(/);
+  const match = src.match(STEMMER_FN_REGEX);
   const className = match[1];
   const langName = className.replace('Stemmer', '').toLowerCase();
   languageNames.push(langName);
