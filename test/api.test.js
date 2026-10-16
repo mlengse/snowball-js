@@ -161,3 +161,10 @@ describe("entrypoint export parity (runtime)", () => {
     }
   );
 });
+
+describe("Among constructor validation", () => {
+  it("initializes language stemmers containing Among instances correctly", () => {
+    const EnglishStemmer = require("../dist/languages/english");
+    expect(() => EnglishStemmer()).not.toThrow();
+  });
+});
