@@ -20,7 +20,7 @@ function IndonesianStemmer() {
                     "peng", 9, 2), new Among("penge", 10, 2, r_CONSONANT_AFTER_E), new Among("peny", 9, 4, r_VOWEL), new Among(
                          "ter", -1, 1)], a_4 = [new Among("be", -1, 3, r_KER),
                          new Among("belajar", 0, 4), new Among("ber", 0, 3), new Among(
-                             "pe", -1, 1), new Among("pelajar", 3, 2), new Among("per", 3, 1), new Among("se", -1, 1)], g_vowel = [17, 65, 16], I_prefix, I_measure, matched_prefix, exception_words = ["terampil"], saved_word, sbp = new SnowballProgram();
+                             "pe", -1, 1), new Among("pelajar", 3, 2), new Among("per", 3, 1), new Among("se", -1, 1)], g_vowel = [17, 65, 16], I_prefix, I_measure, matched_prefix, exception_words = ["terampil"], saved_word, sbp = new SnowballProgram(), prefix_regex = /^(?:me|pe|ter|di|ke|ber|per)/;
     this.setCurrent = function (word) {
         saved_word = word;
         sbp.setCurrent(word);
@@ -36,15 +36,7 @@ function IndonesianStemmer() {
         if (I_measure - 1 <= 2) {
             var particleStart = sbp.cursor;
             var rest = saved_word.substring(sbp.limit_backward, particleStart);
-            if (rest.indexOf("meng") === 0 || rest.indexOf("menge") === 0 ||
-                rest.indexOf("meny") === 0 || rest.indexOf("men") === 0 ||
-                rest.indexOf("mem") === 0 || rest.indexOf("me") === 0 ||
-                rest.indexOf("peng") === 0 || rest.indexOf("penge") === 0 ||
-                rest.indexOf("peny") === 0 || rest.indexOf("pen") === 0 ||
-                rest.indexOf("pem") === 0 || rest.indexOf("pe") === 0 ||
-                rest.indexOf("ter") === 0 || rest.indexOf("di") === 0 ||
-                rest.indexOf("ke") === 0 || rest.indexOf("ber") === 0 ||
-                rest.indexOf("per") === 0) {
+            if (prefix_regex.test(rest)) {
                 return false;
             }
         }
