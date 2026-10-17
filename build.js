@@ -106,31 +106,53 @@ ${indent(body, 1)}
 });
 console.log(`Build complete: ${languageNames.length} per-language bundles in dist/languages/`);
 
-function extractBody(src) {
-  const lines = src.split('\n');
+function calculateDeltaDepth(line) {
+  let delta = 0;
+  for (const ch of line) {
+    if (ch === '{') delta++;
+    else if (ch === '}') delta--;
+  }
+  return delta;
+}
+
+function extractFunctionLines(lines) {
   let depth = 0;
   let started = false;
   const body = [];
+
   for (const line of lines) {
     if (!started) {
-      if (STEMMER_FN_REGEX.test(line)) {
-        started = true;
-        depth = 0;
-      } else {
+      if (!STEMMER_FN_REGEX.test(line)) {
         continue;
       }
+      started = true;
+      depth = 0;
     }
-    for (const ch of line) {
-      if (ch === '{') depth++;
-      else if (ch === '}') depth--;
-    }
+
+    depth += calculateDeltaDepth(line);
     body.push(line);
-    if (started && depth === 0) break;
+
+    if (depth === 0) {
+      break;
+    }
   }
-  const inner = body.join('\n');
-  const firstBrace = inner.indexOf('{');
-  const lastBrace = inner.lastIndexOf('}');
-  return inner.substring(firstBrace + 1, lastBrace);
+
+  return body;
+}
+
+function unwrapBraces(code) {
+  const firstBrace = code.indexOf('{');
+  const lastBrace = code.lastIndexOf('}');
+  if (firstBrace === -1 || lastBrace === -1 || firstBrace >= lastBrace) {
+    return code;
+  }
+  return code.substring(firstBrace + 1, lastBrace);
+}
+
+function extractBody(src) {
+  const lines = src.split('\n');
+  const functionLines = extractFunctionLines(lines);
+  return unwrapBraces(functionLines.join('\n'));
 }
 
 function indent(text, tabs) {
