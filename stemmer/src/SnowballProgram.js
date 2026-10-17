@@ -9,6 +9,64 @@
 
 function SnowballProgram() {
 	var current;
+	function find_among_internal(self, v, v_size, backward) {
+		var i = 0, j = v_size, c = self.cursor, limit = backward ? self.limit_backward : self.limit, common_i = 0, common_j = 0, first_key_inspected = false;
+		while (true) {
+			var k = i + ((j - i) >> 1), diff = 0, common = common_i < common_j
+					? common_i
+					: common_j, w = v[k];
+			if (backward) {
+				for (var i2 = w.s_size - 1 - common; i2 >= 0; i2--) {
+					if (c - common === limit) {
+						diff = -1;
+						break;
+					}
+					diff = current.charCodeAt(c - 1 - common) - w.s[i2];
+					if (diff)
+						break;
+					common++;
+				}
+			} else {
+				for (var i2 = common; i2 < w.s_size; i2++) {
+					if (c + common === limit) {
+						diff = -1;
+						break;
+					}
+					diff = current.charCodeAt(c + common) - w.s[i2];
+					if (diff)
+						break;
+					common++;
+				}
+			}
+			if (diff < 0) {
+				j = k;
+				common_j = common;
+			} else {
+				i = k;
+				common_i = common;
+			}
+			if (j - i <= 1) {
+				if (i > 0 || j === i || first_key_inspected)
+					break;
+				first_key_inspected = true;
+			}
+		}
+		while (true) {
+			var w = v[i];
+			if (common_i >= w.s_size) {
+				self.cursor = backward ? c - w.s_size : c + w.s_size;
+				if (!w.method)
+					return w.result;
+				var res = w.method();
+				self.cursor = backward ? c - w.s_size : c + w.s_size;
+				if (res)
+					return w.result;
+			}
+			i = w.substring_i;
+			if (i < 0)
+				return 0;
+		}
+	}
 	return {
 		bra : 0,
 		ket : 0,
@@ -104,94 +162,10 @@ function SnowballProgram() {
 			return true;
 		},
 		find_among : function(v, v_size) {
-			var i = 0, j = v_size, c = this.cursor, l = this.limit, common_i = 0, common_j = 0, first_key_inspected = false;
-			while (true) {
-				var k = i + ((j - i) >> 1), diff = 0, common = common_i < common_j
-						? common_i
-						: common_j, w = v[k];
-				for (var i2 = common; i2 < w.s_size; i2++) {
-					if (c + common === l) {
-						diff = -1;
-						break;
-					}
-					diff = current.charCodeAt(c + common) - w.s[i2];
-					if (diff)
-						break;
-					common++;
-				}
-				if (diff < 0) {
-					j = k;
-					common_j = common;
-				} else {
-					i = k;
-					common_i = common;
-				}
-				if (j - i <= 1) {
-					if (i > 0 || j === i || first_key_inspected)
-						break;
-					first_key_inspected = true;
-				}
-			}
-			while (true) {
-				var w = v[i];
-				if (common_i >= w.s_size) {
-					this.cursor = c + w.s_size;
-					if (!w.method)
-						return w.result;
-					var res = w.method();
-					this.cursor = c + w.s_size;
-					if (res)
-						return w.result;
-				}
-				i = w.substring_i;
-				if (i < 0)
-					return 0;
-			}
+			return find_among_internal(this, v, v_size, false);
 		},
 		find_among_b : function(v, v_size) {
-			var i = 0, j = v_size, c = this.cursor, lb = this.limit_backward, common_i = 0, common_j = 0, first_key_inspected = false;
-			while (true) {
-				var k = i + ((j - i) >> 1), diff = 0, common = common_i < common_j
-						? common_i
-						: common_j, w = v[k];
-				for (var i2 = w.s_size - 1 - common; i2 >= 0; i2--) {
-					if (c - common === lb) {
-						diff = -1;
-						break;
-					}
-					diff = current.charCodeAt(c - 1 - common) - w.s[i2];
-					if (diff)
-						break;
-					common++;
-				}
-				if (diff < 0) {
-					j = k;
-					common_j = common;
-				} else {
-					i = k;
-					common_i = common;
-				}
-				if (j - i <= 1) {
-					if (i > 0 || j === i || first_key_inspected)
-						break;
-					first_key_inspected = true;
-				}
-			}
-			while (true) {
-				var w = v[i];
-				if (common_i >= w.s_size) {
-					this.cursor = c - w.s_size;
-					if (!w.method)
-						return w.result;
-					var res = w.method();
-					this.cursor = c - w.s_size;
-					if (res)
-						return w.result;
-				}
-				i = w.substring_i;
-				if (i < 0)
-					return 0;
-			}
+			return find_among_internal(this, v, v_size, true);
 		},
 		replace_s : function(c_bra, c_ket, s) {
 			var adjustment = s.length - (c_ket - c_bra);
