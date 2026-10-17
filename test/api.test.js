@@ -221,17 +221,58 @@ describe("SnowballProgram slice_check validation", () => {
     path.join(__dirname, "../stemmer/src/SnowballProgram.js"),
     "utf8"
   );
-  const SnowballProgram = new Function("current", programCode + "; return SnowballProgram;")("");
+  const SnowballProgram = new Function(programCode + "; return SnowballProgram;")();
 
-  it("throws an Error instance when slice operation is faulty", () => {
-    const sbp = new SnowballProgram();
+  it("does not throw when slice state is valid", () => {
+    const sbp = SnowballProgram();
+    sbp.setCurrent("testing");
+    expect(() => sbp.slice_check()).not.toThrow();
+  });
+
+  it("throws an Error when bra < 0", () => {
+    const sbp = SnowballProgram();
+    sbp.setCurrent("testing");
     sbp.bra = -1;
-    try {
-      sbp.slice_check();
-      expect.fail("Should have thrown an error");
-    } catch (err) {
-      expect(err).toBeInstanceOf(Error);
-      expect(err.message).toBe("faulty slice operation");
-    }
+    expect(() => sbp.slice_check()).toThrow("faulty slice operation");
+  });
+
+  it("throws an Error when bra > ket", () => {
+    const sbp = SnowballProgram();
+    sbp.setCurrent("testing");
+    sbp.bra = 5;
+    sbp.ket = 3;
+    expect(() => sbp.slice_check()).toThrow("faulty slice operation");
+  });
+
+  it("throws an Error when ket > limit", () => {
+    const sbp = SnowballProgram();
+    sbp.setCurrent("testing");
+    sbp.ket = 10;
+    expect(() => sbp.slice_check()).toThrow("faulty slice operation");
+  });
+
+  it("throws an Error when limit > current length", () => {
+    const sbp = SnowballProgram();
+    sbp.setCurrent("testing");
+    sbp.limit = 20;
+    expect(() => sbp.slice_check()).toThrow("faulty slice operation");
+  });
+
+  it("triggers slice_check in slice_from, slice_del, and slice_to on invalid state", () => {
+    const sbp = SnowballProgram();
+    sbp.setCurrent("testing");
+    sbp.bra = -1;
+
+    expect(() => sbp.slice_from("x")).toThrow("faulty slice operation");
+    expect(() => sbp.slice_del()).toThrow("faulty slice operation");
+    expect(() => sbp.slice_to()).toThrow("faulty slice operation");
+  });
+
+  it("performs slice_to correctly when state is valid", () => {
+    const sbp = SnowballProgram();
+    sbp.setCurrent("testing");
+    sbp.bra = 0;
+    sbp.ket = 4;
+    expect(sbp.slice_to()).toBe("test");
   });
 });
