@@ -213,3 +213,25 @@ describe("Among constructor validation", () => {
     expect(() => new Among("test", 0, 0)).toThrow("Bad Among initialisation");
   });
 });
+
+describe("SnowballProgram slice_check validation", () => {
+  const fs = require("fs");
+  const path = require("path");
+  const programCode = fs.readFileSync(
+    path.join(__dirname, "../stemmer/src/SnowballProgram.js"),
+    "utf8"
+  );
+  const SnowballProgram = new Function("current", programCode + "; return SnowballProgram;")("");
+
+  it("throws an Error instance when slice operation is faulty", () => {
+    const sbp = new SnowballProgram();
+    sbp.bra = -1;
+    try {
+      sbp.slice_check();
+      expect.fail("Should have thrown an error");
+    } catch (err) {
+      expect(err).toBeInstanceOf(Error);
+      expect(err.message).toBe("faulty slice operation");
+    }
+  });
+});

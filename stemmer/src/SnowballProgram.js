@@ -206,7 +206,7 @@ function SnowballProgram() {
 		slice_check : function() {
 			if (this.bra < 0 || this.bra > this.ket || this.ket > this.limit
 					|| this.limit > current.length)
-				throw ("faulty slice operation");
+				throw new Error("faulty slice operation");
 		},
 		slice_from : function(s) {
 			this.slice_check();
