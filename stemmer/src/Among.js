@@ -9,7 +9,7 @@
 
 function Among(s, substring_i, result, method) {
 	if (typeof s !== 'string' || typeof substring_i !== 'number' || !result)
-		throw ("Bad Among initialisation: s:" + s + ", substring_i: "
+		throw new Error("Bad Among initialisation: s:" + s + ", substring_i: "
 				+ substring_i + ", result: " + result);
 	this.s_size = s.length;
 	this.s = this.toCharArray(s);
