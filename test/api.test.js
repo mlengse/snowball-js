@@ -163,8 +163,43 @@ describe("entrypoint export parity (runtime)", () => {
 });
 
 describe("Among constructor validation", () => {
+  const fs = require("fs");
+  const path = require("path");
+  const amongCode = fs.readFileSync(
+    path.join(__dirname, "../stemmer/src/Among.js"),
+    "utf8"
+  );
+  const Among = new Function(amongCode + "; return Among;")();
+
   it("initializes language stemmers containing Among instances correctly", () => {
     const EnglishStemmer = require("../dist/languages/english");
     expect(() => EnglishStemmer()).not.toThrow();
+  });
+
+  it("creates an Among instance when valid arguments are provided", () => {
+    const among = new Among("test", 0, 1, null);
+    expect(among.s_size).toBe(4);
+    expect(among.s).toEqual([116, 101, 115, 116]);
+    expect(among.substring_i).toBe(0);
+    expect(among.result).toBe(1);
+    expect(among.method).toBeNull();
+  });
+
+  it("throws an error when s parameter is invalid", () => {
+    expect(() => new Among(null, 0, 1)).toThrow("Bad Among initialisation");
+    expect(() => new Among(undefined, 0, 1)).toThrow("Bad Among initialisation");
+    expect(() => new Among(123, 0, 1)).toThrow("Bad Among initialisation");
+  });
+
+  it("throws an error when substring_i parameter is invalid", () => {
+    expect(() => new Among("test", null, 1)).toThrow("Bad Among initialisation");
+    expect(() => new Among("test", undefined, 1)).toThrow("Bad Among initialisation");
+    expect(() => new Among("test", "0", 1)).toThrow("Bad Among initialisation");
+  });
+
+  it("throws an error when result parameter is missing or falsy", () => {
+    expect(() => new Among("test", 0, null)).toThrow("Bad Among initialisation");
+    expect(() => new Among("test", 0, undefined)).toThrow("Bad Among initialisation");
+    expect(() => new Among("test", 0, 0)).toThrow("Bad Among initialisation");
   });
 });
