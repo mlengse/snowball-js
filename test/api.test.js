@@ -185,6 +185,16 @@ describe("Among constructor validation", () => {
     expect(among.method).toBeNull();
   });
 
+  it("throws an Error instance when invalid arguments are provided", () => {
+    try {
+      new Among(null, 0, 1);
+      expect.fail("Should have thrown an error");
+    } catch (err) {
+      expect(err).toBeInstanceOf(Error);
+      expect(err.message).toContain("Bad Among initialisation");
+    }
+  });
+
   it("throws an error when s parameter is invalid", () => {
     expect(() => new Among(null, 0, 1)).toThrow("Bad Among initialisation");
     expect(() => new Among(undefined, 0, 1)).toThrow("Bad Among initialisation");
