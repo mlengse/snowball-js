@@ -276,3 +276,73 @@ describe("SnowballProgram slice_check validation", () => {
     expect(sbp.slice_to()).toBe("test");
   });
 });
+
+describe("SnowballProgram find_among and find_among_b direct unit tests", () => {
+  const fs = require("fs");
+  const path = require("path");
+  const amongCode = fs.readFileSync(
+    path.join(__dirname, "../stemmer/src/Among.js"),
+    "utf8"
+  );
+  const programCode = fs.readFileSync(
+    path.join(__dirname, "../stemmer/src/SnowballProgram.js"),
+    "utf8"
+  );
+  const Among = new Function(amongCode + "; return Among;")();
+  const SnowballProgram = new Function(programCode + "; return SnowballProgram;")();
+
+  it("finds forward among entries correctly and updates cursor", () => {
+    const sbp = SnowballProgram();
+    sbp.setCurrent("testing");
+    const v = [
+      new Among("test", -1, 1),
+      new Among("testing", -1, 2),
+    ];
+    // Binary search expects sorted amongs
+    v.sort((a, b) => (a.s > b.s ? 1 : -1));
+
+    const res = sbp.find_among(v, v.length);
+    expect(res).toBe(2);
+    expect(sbp.cursor).toBe(7);
+  });
+
+  it("finds backward among entries correctly and updates cursor", () => {
+    const sbp = SnowballProgram();
+    sbp.setCurrent("testing");
+    sbp.cursor = 7;
+    const v = [
+      new Among("ing", -1, 1),
+      new Among("ting", -1, 2),
+    ];
+    v.sort((a, b) => (a.s > b.s ? 1 : -1));
+
+    const res = sbp.find_among_b(v, v.length);
+    expect(res).toBe(2);
+    expect(sbp.cursor).toBe(3);
+  });
+
+  it("executes method callback in find_among if defined", () => {
+    const sbp = SnowballProgram();
+    sbp.setCurrent("testing");
+    let called = false;
+    const method = () => {
+      called = true;
+      return true;
+    };
+    const v = [new Among("test", -1, 5, method)];
+
+    const res = sbp.find_among(v, 1);
+    expect(called).toBe(true);
+    expect(res).toBe(5);
+    expect(sbp.cursor).toBe(4);
+  });
+
+  it("returns 0 when no match is found", () => {
+    const sbp = SnowballProgram();
+    sbp.setCurrent("abc");
+    const v = [new Among("xyz", -1, 1)];
+
+    expect(sbp.find_among(v, 1)).toBe(0);
+    expect(sbp.find_among_b(v, 1)).toBe(0);
+  });
+});
