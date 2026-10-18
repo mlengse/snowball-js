@@ -92,12 +92,13 @@ function SnowballProgram() {
 			return result;
 		},
 		in_grouping : function(s, min, max) {
-			if (this.cursor < this.limit) {
-				var ch = current.charCodeAt(this.cursor);
+			var cursor = this.cursor; // Hoist this.cursor to local variable for faster property lookup
+			if (cursor < this.limit) {
+				var ch = current.charCodeAt(cursor);
 				if (ch <= max && ch >= min) {
 					ch -= min;
 					if (s[ch >> 3] & (1 << (ch & 7))) {
-						this.cursor++;
+						this.cursor = cursor + 1;
 						return true;
 					}
 				}
@@ -105,12 +106,13 @@ function SnowballProgram() {
 			return false;
 		},
 		in_grouping_b : function(s, min, max) {
-			if (this.cursor > this.limit_backward) {
-				var ch = current.charCodeAt(this.cursor - 1);
+			var cursor = this.cursor; // Hoist this.cursor to local variable for faster property lookup
+			if (cursor > this.limit_backward) {
+				var ch = current.charCodeAt(cursor - 1);
 				if (ch <= max && ch >= min) {
 					ch -= min;
 					if (s[ch >> 3] & (1 << (ch & 7))) {
-						this.cursor--;
+						this.cursor = cursor - 1;
 						return true;
 					}
 				}
@@ -118,52 +120,56 @@ function SnowballProgram() {
 			return false;
 		},
 		out_grouping : function(s, min, max) {
-			if (this.cursor < this.limit) {
-				var ch = current.charCodeAt(this.cursor);
+			var cursor = this.cursor; // Hoist this.cursor to local variable for faster property lookup
+			if (cursor < this.limit) {
+				var ch = current.charCodeAt(cursor);
 				if (ch > max || ch < min) {
-					this.cursor++;
+					this.cursor = cursor + 1;
 					return true;
 				}
 				ch -= min;
 				if (!(s[ch >> 3] & (1 << (ch & 7)))) {
-					this.cursor++;
+					this.cursor = cursor + 1;
 					return true;
 				}
 			}
 			return false;
 		},
 		out_grouping_b : function(s, min, max) {
-			if (this.cursor > this.limit_backward) {
-				var ch = current.charCodeAt(this.cursor - 1);
+			var cursor = this.cursor; // Hoist this.cursor to local variable for faster property lookup
+			if (cursor > this.limit_backward) {
+				var ch = current.charCodeAt(cursor - 1);
 				if (ch > max || ch < min) {
-					this.cursor--;
+					this.cursor = cursor - 1;
 					return true;
 				}
 				ch -= min;
 				if (!(s[ch >> 3] & (1 << (ch & 7)))) {
-					this.cursor--;
+					this.cursor = cursor - 1;
 					return true;
 				}
 			}
 			return false;
 		},
 		eq_s : function(s_size, s) {
-			if (this.limit - this.cursor < s_size)
+			var cursor = this.cursor; // Hoist this.cursor to local variable for faster property lookup
+			if (this.limit - cursor < s_size)
 				return false;
 			for (var i = 0; i < s_size; i++)
-				if (current.charCodeAt(this.cursor + i) !== s.charCodeAt(i))
+				if (current.charCodeAt(cursor + i) !== s.charCodeAt(i))
 					return false;
-			this.cursor += s_size;
+			this.cursor = cursor + s_size;
 			return true;
 		},
 		eq_s_b : function(s_size, s) {
-			if (this.cursor - this.limit_backward < s_size)
+			var cursor = this.cursor; // Hoist this.cursor to local variable for faster property lookup
+			if (cursor - this.limit_backward < s_size)
 				return false;
+			var start = cursor - s_size; // Pre-calculate string start offset
 			for (var i = 0; i < s_size; i++)
-				if (current.charCodeAt(this.cursor - s_size + i) !== s
-						.charCodeAt(i))
+				if (current.charCodeAt(start + i) !== s.charCodeAt(i))
 					return false;
-			this.cursor -= s_size;
+			this.cursor = start;
 			return true;
 		},
 		find_among : function(v, v_size) {
