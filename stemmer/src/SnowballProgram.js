@@ -14,28 +14,33 @@ function SnowballProgram() {
 		while (true) {
 			var k = i + ((j - i) >> 1), diff = 0, common = common_i < common_j
 					? common_i
-					: common_j, w = v[k];
+					: common_j, w = v[k], ws = w.s, ws_size = w.s_size; // Hoist properties for faster loop access
 			if (backward) {
-				for (var i2 = w.s_size - 1 - common; i2 >= 0; i2--) {
-					if (c - common === limit) {
+				// Incremental cursor position tracking eliminates repeated addition/subtraction inside loop
+				var c_common = c - common;
+				for (var i2 = ws_size - 1 - common; i2 >= 0; i2--) {
+					if (c_common === limit) {
 						diff = -1;
 						break;
 					}
-					diff = current.charCodeAt(c - 1 - common) - w.s[i2];
+					diff = current.charCodeAt(c_common - 1) - ws[i2];
 					if (diff)
 						break;
 					common++;
+					c_common--;
 				}
 			} else {
-				for (var i2 = common; i2 < w.s_size; i2++) {
-					if (c + common === limit) {
+				var c_common = c + common;
+				for (var i2 = common; i2 < ws_size; i2++) {
+					if (c_common === limit) {
 						diff = -1;
 						break;
 					}
-					diff = current.charCodeAt(c + common) - w.s[i2];
+					diff = current.charCodeAt(c_common) - ws[i2];
 					if (diff)
 						break;
 					common++;
+					c_common++;
 				}
 			}
 			if (diff < 0) {
@@ -91,7 +96,7 @@ function SnowballProgram() {
 				var ch = current.charCodeAt(this.cursor);
 				if (ch <= max && ch >= min) {
 					ch -= min;
-					if (s[ch >> 3] & (0X1 << (ch & 0X7))) {
+					if (s[ch >> 3] & (1 << (ch & 7))) {
 						this.cursor++;
 						return true;
 					}
@@ -104,7 +109,7 @@ function SnowballProgram() {
 				var ch = current.charCodeAt(this.cursor - 1);
 				if (ch <= max && ch >= min) {
 					ch -= min;
-					if (s[ch >> 3] & (0X1 << (ch & 0X7))) {
+					if (s[ch >> 3] & (1 << (ch & 7))) {
 						this.cursor--;
 						return true;
 					}
@@ -120,7 +125,7 @@ function SnowballProgram() {
 					return true;
 				}
 				ch -= min;
-				if (!(s[ch >> 3] & (0X1 << (ch & 0X7)))) {
+				if (!(s[ch >> 3] & (1 << (ch & 7)))) {
 					this.cursor++;
 					return true;
 				}
@@ -135,7 +140,7 @@ function SnowballProgram() {
 					return true;
 				}
 				ch -= min;
-				if (!(s[ch >> 3] & (0X1 << (ch & 0X7)))) {
+				if (!(s[ch >> 3] & (1 << (ch & 7)))) {
 					this.cursor--;
 					return true;
 				}
