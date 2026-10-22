@@ -346,3 +346,54 @@ describe("SnowballProgram find_among and find_among_b direct unit tests", () => 
     expect(sbp.find_among_b(v, 1)).toBe(0);
   });
 });
+
+describe("SnowballProgram out_grouping direct unit tests", () => {
+  const fs = require("fs");
+  const path = require("path");
+  const programCode = fs.readFileSync(
+    path.join(__dirname, "../stemmer/src/SnowballProgram.js"),
+    "utf8"
+  );
+  const SnowballProgram = new Function(programCode + "; return SnowballProgram;")();
+
+  it("returns true and advances cursor when char < min", () => {
+    const sbp = SnowballProgram();
+    sbp.setCurrent("abc");
+    const res = sbp.out_grouping([0xff], 98, 120);
+    expect(res).toBe(true);
+    expect(sbp.cursor).toBe(1);
+  });
+
+  it("returns true and advances cursor when char > max", () => {
+    const sbp = SnowballProgram();
+    sbp.setCurrent("z");
+    const res = sbp.out_grouping([0xff], 97, 120);
+    expect(res).toBe(true);
+    expect(sbp.cursor).toBe(1);
+  });
+
+  it("returns true and advances cursor when char is in range [min, max] but not in grouping bit array", () => {
+    const sbp = SnowballProgram();
+    sbp.setCurrent("b");
+    const res = sbp.out_grouping([0x01], 97, 100);
+    expect(res).toBe(true);
+    expect(sbp.cursor).toBe(1);
+  });
+
+  it("returns false and leaves cursor unchanged when char is in range [min, max] and is in grouping bit array", () => {
+    const sbp = SnowballProgram();
+    sbp.setCurrent("a");
+    const res = sbp.out_grouping([0x01], 97, 100);
+    expect(res).toBe(false);
+    expect(sbp.cursor).toBe(0);
+  });
+
+  it("returns false and leaves cursor unchanged when cursor >= limit", () => {
+    const sbp = SnowballProgram();
+    sbp.setCurrent("a");
+    sbp.cursor = 1;
+    const res = sbp.out_grouping([0x00], 97, 100);
+    expect(res).toBe(false);
+    expect(sbp.cursor).toBe(1);
+  });
+});
