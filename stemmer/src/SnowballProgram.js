@@ -155,9 +155,8 @@ function SnowballProgram() {
 			var cursor = this.cursor; // Hoist this.cursor to local variable for faster property lookup
 			if (this.limit - cursor < s_size)
 				return false;
-			for (var i = 0; i < s_size; i++)
-				if (current.charCodeAt(cursor + i) !== s.charCodeAt(i))
-					return false;
+			if (!current.startsWith(s, cursor))
+				return false;
 			this.cursor = cursor + s_size;
 			return true;
 		},
@@ -166,9 +165,8 @@ function SnowballProgram() {
 			if (cursor - this.limit_backward < s_size)
 				return false;
 			var start = cursor - s_size; // Pre-calculate string start offset
-			for (var i = 0; i < s_size; i++)
-				if (current.charCodeAt(start + i) !== s.charCodeAt(i))
-					return false;
+			if (!current.startsWith(s, start))
+				return false;
 			this.cursor = start;
 			return true;
 		},
