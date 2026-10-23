@@ -445,3 +445,69 @@ describe("SnowballProgram eq_v_b direct unit tests", () => {
     expect(sbp.cursor).toBe(7);
   });
 });
+
+describe("SnowballProgram in_grouping_b direct unit tests", () => {
+  const fs = require("fs");
+  const path = require("path");
+  const programCode = fs.readFileSync(
+    path.join(__dirname, "../stemmer/src/SnowballProgram.js"),
+    "utf8"
+  );
+  const SnowballProgram = new Function(programCode + "; return SnowballProgram;")();
+
+  it("returns false and leaves cursor unchanged when cursor <= limit_backward", () => {
+    const sbp = SnowballProgram();
+    sbp.setCurrent("abc");
+    sbp.cursor = 0;
+    sbp.limit_backward = 0;
+    const res = sbp.in_grouping_b([0xff], 97, 120);
+    expect(res).toBe(false);
+    expect(sbp.cursor).toBe(0);
+  });
+
+  it("returns false and leaves cursor unchanged when char at cursor - 1 < min", () => {
+    const sbp = SnowballProgram();
+    sbp.setCurrent("abc");
+    sbp.cursor = 1;
+    const res = sbp.in_grouping_b([0xff], 98, 120);
+    expect(res).toBe(false);
+    expect(sbp.cursor).toBe(1);
+  });
+
+  it("returns false and leaves cursor unchanged when char at cursor - 1 > max", () => {
+    const sbp = SnowballProgram();
+    sbp.setCurrent("z");
+    sbp.cursor = 1;
+    const res = sbp.in_grouping_b([0xff], 97, 120);
+    expect(res).toBe(false);
+    expect(sbp.cursor).toBe(1);
+  });
+
+  it("returns false and leaves cursor unchanged when char is in range [min, max] but bit is not set", () => {
+    const sbp = SnowballProgram();
+    sbp.setCurrent("b");
+    sbp.cursor = 1;
+    const res = sbp.in_grouping_b([0x01], 97, 100);
+    expect(res).toBe(false);
+    expect(sbp.cursor).toBe(1);
+  });
+
+  it("returns true and decrements cursor when char is in range [min, max] and bit is set", () => {
+    const sbp = SnowballProgram();
+    sbp.setCurrent("a");
+    sbp.cursor = 1;
+    const res = sbp.in_grouping_b([0x01], 97, 100);
+    expect(res).toBe(true);
+    expect(sbp.cursor).toBe(0);
+  });
+
+  it("respects custom limit_backward boundary", () => {
+    const sbp = SnowballProgram();
+    sbp.setCurrent("abc");
+    sbp.cursor = 1;
+    sbp.limit_backward = 1;
+    const res = sbp.in_grouping_b([0xff], 97, 120);
+    expect(res).toBe(false);
+    expect(sbp.cursor).toBe(1);
+  });
+});
