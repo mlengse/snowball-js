@@ -444,4 +444,13 @@ describe("SnowballProgram eq_v_b direct unit tests", () => {
     expect(result).toBe(false);
     expect(sbp.cursor).toBe(7);
   });
+
+  it("returns true and keeps cursor unchanged when search string is empty", () => {
+    const sbp = SnowballProgram();
+    sbp.setCurrent("testing");
+    sbp.cursor = 4;
+    const result = sbp.eq_v_b("");
+    expect(result).toBe(true);
+    expect(sbp.cursor).toBe(4);
+  });
 });
