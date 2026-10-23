@@ -1,15 +1,12 @@
 #!/usr/bin/env node
 
-const fs = require('fs');
+const fs = require('fs').promises;
 const path = require('path');
 
 const STEMMER_FN_REGEX = /function\s+(\w+Stemmer)\s*\(/;
 
 const SRC = path.join(__dirname, 'stemmer', 'src');
 const DIST = path.join(__dirname, 'dist');
-if (!fs.existsSync(DIST)) {
-  fs.mkdirSync(DIST, { recursive: true });
-}
 
 const license = `/*!
  * Snowball JavaScript Library v0.3
@@ -20,22 +17,30 @@ const license = `/*!
  * http://www.mozilla.org/MPL/
  */`;
 
-const among = fs.readFileSync(path.join(SRC, 'Among.js'), 'utf8');
-const snowballProgram = fs.readFileSync(path.join(SRC, 'SnowballProgram.js'), 'utf8');
+async function build() {
+  await fs.mkdir(DIST, { recursive: true });
 
-const extDir = path.join(SRC, 'ext');
-const stemmers = fs.readdirSync(extDir)
-  .filter(f => f.endsWith('.js'))
-  .sort()
-  .map(f => fs.readFileSync(path.join(extDir, f), 'utf8'));
+  const [among, snowballProgram] = await Promise.all([
+    fs.readFile(path.join(SRC, 'Among.js'), 'utf8'),
+    fs.readFile(path.join(SRC, 'SnowballProgram.js'), 'utf8')
+  ]);
 
-const stemFactoryEntries = stemmers.map(src => {
-  const match = src.match(STEMMER_FN_REGEX);
-  const name = match[1];
-  return `\t\t${name} : function() {\n${indent(extractBody(src), 2)}\n\t\t}`;
-}).join(',\n');
+  const extDir = path.join(SRC, 'ext');
+  const files = (await fs.readdir(extDir))
+    .filter(f => f.endsWith('.js'))
+    .sort();
 
-const output = `${license}
+  const stemmers = await Promise.all(
+    files.map(f => fs.readFile(path.join(extDir, f), 'utf8'))
+  );
+
+  const stemFactoryEntries = stemmers.map(src => {
+    const match = src.match(STEMMER_FN_REGEX);
+    const name = match[1];
+    return `\t\t${name} : function() {\n${indent(extractBody(src), 2)}\n\t\t}`;
+  }).join(',\n');
+
+  const output = `${license}
 
 module.exports = Snowball;
 function Snowball(lng) {
@@ -50,23 +55,21 @@ ${stemFactoryEntries}
 }
 `;
 
-fs.writeFileSync(path.join(DIST, 'Snowball.js'), output);
-console.log('Build complete: dist/Snowball.js');
+  await fs.writeFile(path.join(DIST, 'Snowball.js'), output);
+  console.log('Build complete: dist/Snowball.js');
 
-const languagesDir = path.join(DIST, 'languages');
-if (!fs.existsSync(languagesDir)) {
-  fs.mkdirSync(languagesDir, { recursive: true });
-}
+  const languagesDir = path.join(DIST, 'languages');
+  await fs.mkdir(languagesDir, { recursive: true });
 
-const languageNames = [];
-stemmers.forEach(src => {
-  const match = src.match(STEMMER_FN_REGEX);
-  const className = match[1];
-  const langName = className.replace('Stemmer', '').toLowerCase();
-  languageNames.push(langName);
+  const languageNames = [];
+  await Promise.all(stemmers.map(async src => {
+    const match = src.match(STEMMER_FN_REGEX);
+    const className = match[1];
+    const langName = className.replace('Stemmer', '').toLowerCase();
+    languageNames.push(langName);
 
-  const body = extractBody(src);
-  const perLangOutput = `${license}
+    const body = extractBody(src);
+    const perLangOutput = `${license}
 
 module.exports = ${className};
 ${indent(among, 0)}
@@ -78,33 +81,39 @@ ${indent(body, 1)}
 }
 `;
 
-  fs.writeFileSync(path.join(languagesDir, `${langName}.js`), perLangOutput);
-  fs.writeFileSync(path.join(languagesDir, `${langName}.mjs`),
-    `import ${className} from './${langName}.js';\nexport default ${className};\nexport { ${className} };\n`
-  );
-  const stemmerInterface =
-    `interface Stemmer {\n` +
-    `  /** Sets the word to be stemmed. */\n` +
-    `  setCurrent(word: string): void;\n` +
-    `  /** Returns the stemmed word, or null if called again without setCurrent. */\n` +
-    `  getCurrent(): string | null;\n` +
-    `  /** Performs stemming on the current word. Returns true if stemming occurred. Call getCurrent() to retrieve the result. */\n` +
-    `  stem(): boolean;\n` +
-    `}\n`;
+    const stemmerInterface =
+      `interface Stemmer {\n` +
+      `  /** Sets the word to be stemmed. */\n` +
+      `  setCurrent(word: string): void;\n` +
+      `  /** Returns the stemmed word, or null if called again without setCurrent. */\n` +
+      `  getCurrent(): string | null;\n` +
+      `  /** Performs stemming on the current word. Returns true if stemming occurred. Call getCurrent() to retrieve the result. */\n` +
+      `  stem(): boolean;\n` +
+      `}\n`;
 
-  // ES module declaration, referenced by the exports map's `import` condition.
-  fs.writeFileSync(path.join(languagesDir, `${langName}.d.mts`),
-    `export ${stemmerInterface}\ndeclare function ${className}(): Stemmer;\nexport default ${className};\nexport { ${className} };\n`
-  );
+    await Promise.all([
+      fs.writeFile(path.join(languagesDir, `${langName}.js`), perLangOutput),
+      fs.writeFile(path.join(languagesDir, `${langName}.mjs`),
+        `import ${className} from './${langName}.js';\nexport default ${className};\nexport { ${className} };\n`
+      ),
+      // ES module declaration, referenced by the exports map's `import` condition.
+      fs.writeFile(path.join(languagesDir, `${langName}.d.mts`),
+        `export ${stemmerInterface}\ndeclare function ${className}(): Stemmer;\nexport default ${className};\nexport { ${className} };\n`
+      ),
+      // CommonJS declaration, referenced by the exports map's `require` condition.
+      fs.writeFile(path.join(languagesDir, `${langName}.d.ts`),
+        `declare function ${className}(): ${className}.Stemmer;\n\ndeclare namespace ${className} {\n${indent(stemmerInterface, 1)}}\n\nexport = ${className};\n`
+      )
+    ]);
+  }));
 
-  // CommonJS declaration, referenced by the exports map's `require` condition. The bundle
-  // does `module.exports = ${className}`, so the callable is described with `export =` and
-  // its types travel through a merged namespace.
-  fs.writeFileSync(path.join(languagesDir, `${langName}.d.ts`),
-    `declare function ${className}(): ${className}.Stemmer;\n\ndeclare namespace ${className} {\n${indent(stemmerInterface, 1)}}\n\nexport = ${className};\n`
-  );
+  console.log(`Build complete: ${languageNames.length} per-language bundles in dist/languages/`);
+}
+
+build().catch(err => {
+  console.error(err);
+  process.exit(1);
 });
-console.log(`Build complete: ${languageNames.length} per-language bundles in dist/languages/`);
 
 function calculateDeltaDepth(line) {
   const open = (line.match(/\{/g) || []).length;
