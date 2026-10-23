@@ -453,6 +453,24 @@ describe("SnowballProgram eq_v_b direct unit tests", () => {
     expect(result).toBe(true);
     expect(sbp.cursor).toBe(4);
   });
+
+  it("delegates to eq_s_b with s.length and s", () => {
+    const sbp = SnowballProgram();
+    let passedLength = null;
+    let passedString = null;
+    sbp.eq_s_b = function(s_size, s) {
+      passedLength = s_size;
+      passedString = s;
+      return true;
+    };
+
+    const target = "test_string";
+    const result = sbp.eq_v_b(target);
+
+    expect(passedLength).toBe(target.length);
+    expect(passedString).toBe(target);
+    expect(result).toBe(true);
+  });
 });
 
 describe("SnowballProgram in_grouping_b direct unit tests", () => {
