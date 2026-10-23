@@ -398,6 +398,61 @@ describe("SnowballProgram out_grouping direct unit tests", () => {
   });
 });
 
+describe("SnowballProgram eq_s direct unit tests", () => {
+  const fs = require("fs");
+  const path = require("path");
+  const programCode = fs.readFileSync(
+    path.join(__dirname, "../stemmer/src/SnowballProgram.js"),
+    "utf8"
+  );
+  const SnowballProgram = new Function(programCode + "; return SnowballProgram;")();
+
+  it("returns true and advances cursor when string matches forward", () => {
+    const sbp = SnowballProgram();
+    sbp.setCurrent("testing");
+    sbp.cursor = 0;
+    const result = sbp.eq_s(4, "test");
+    expect(result).toBe(true);
+    expect(sbp.cursor).toBe(4);
+  });
+
+  it("returns false and leaves cursor unchanged when string does not match forward", () => {
+    const sbp = SnowballProgram();
+    sbp.setCurrent("testing");
+    sbp.cursor = 0;
+    const result = sbp.eq_s(4, "fast");
+    expect(result).toBe(false);
+    expect(sbp.cursor).toBe(0);
+  });
+
+  it("returns false when s_size exceeds available string limit from cursor", () => {
+    const sbp = SnowballProgram();
+    sbp.setCurrent("testing");
+    sbp.cursor = 5; // limit is 7, remaining length is 2
+    const result = sbp.eq_s(3, "ing");
+    expect(result).toBe(false);
+    expect(sbp.cursor).toBe(5);
+  });
+
+  it("returns true and advances cursor from non-zero cursor position", () => {
+    const sbp = SnowballProgram();
+    sbp.setCurrent("testing");
+    sbp.cursor = 4;
+    const result = sbp.eq_s(3, "ing");
+    expect(result).toBe(true);
+    expect(sbp.cursor).toBe(7);
+  });
+
+  it("returns true and leaves cursor unchanged for empty string match", () => {
+    const sbp = SnowballProgram();
+    sbp.setCurrent("testing");
+    sbp.cursor = 2;
+    const result = sbp.eq_s(0, "");
+    expect(result).toBe(true);
+    expect(sbp.cursor).toBe(2);
+  });
+});
+
 describe("SnowballProgram eq_s_b direct unit tests", () => {
   const fs = require("fs");
   const path = require("path");
