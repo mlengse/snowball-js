@@ -12,14 +12,8 @@ function Among(s, substring_i, result, method) {
 		throw new Error("Bad Among initialisation: s:" + s + ", substring_i: "
 				+ substring_i + ", result: " + result);
 	this.s_size = s.length;
-	this.s = this.toCharArray(s);
+	this.s = s;
 	this.substring_i = substring_i;
 	this.result = result;
 	this.method = method;
-}
-Among.prototype.toCharArray = function(s) {
-	const sLength = s.length, charArr = new Array(sLength);
-	for (let i = 0; i < sLength; i++)
-		charArr[i] = s.charCodeAt(i);
-	return charArr;
 }

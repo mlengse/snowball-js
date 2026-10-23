@@ -179,7 +179,7 @@ describe("Among constructor validation", () => {
   it("creates an Among instance when valid arguments are provided", () => {
     const among = new Among("test", 0, 1, null);
     expect(among.s_size).toBe(4);
-    expect(among.s).toEqual([116, 101, 115, 116]);
+    expect(among.s).toBe("test");
     expect(among.substring_i).toBe(0);
     expect(among.result).toBe(1);
     expect(among.method).toBeNull();

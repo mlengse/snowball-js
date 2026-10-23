@@ -23,7 +23,7 @@ function SnowballProgram() {
 						diff = -1;
 						break;
 					}
-					diff = current.charCodeAt(c_common - 1) - ws[i2];
+					diff = current.charCodeAt(c_common - 1) - ws.charCodeAt(i2);
 					if (diff)
 						break;
 					common++;
@@ -36,7 +36,7 @@ function SnowballProgram() {
 						diff = -1;
 						break;
 					}
-					diff = current.charCodeAt(c_common) - ws[i2];
+					diff = current.charCodeAt(c_common) - ws.charCodeAt(i2);
 					if (diff)
 						break;
 					common++;
