@@ -9,14 +9,17 @@
 
 function SnowballProgram() {
 	var current;
-	function find_among_internal(self, v, v_size, backward) {
-		var i = 0, j = v_size, c = self.cursor, limit = backward ? self.limit_backward : self.limit, common_i = 0, common_j = 0, first_key_inspected = false;
+
+	function search_among_binary(self, v, v_size, backward) {
+		var i = 0, j = v_size, c = self.cursor, limit = backward ? self.limit_backward : self.limit;
+		var common_i = 0, common_j = 0, first_key_inspected = false;
+
 		while (true) {
-			var k = i + ((j - i) >> 1), diff = 0, common = common_i < common_j
-					? common_i
-					: common_j, w = v[k], ws = w.s, ws_size = w.s_size; // Hoist properties for faster loop access
+			var k = i + ((j - i) >> 1), diff = 0;
+			var common = common_i < common_j ? common_i : common_j;
+			var w = v[k], ws = w.s, ws_size = w.s_size;
+
 			if (backward) {
-				// Incremental cursor position tracking eliminates repeated addition/subtraction inside loop
 				var c_common = c - common;
 				for (var i2 = ws_size - 1 - common; i2 >= 0; i2--) {
 					if (c_common === limit) {
@@ -43,6 +46,7 @@ function SnowballProgram() {
 					c_common++;
 				}
 			}
+
 			if (diff < 0) {
 				j = k;
 				common_j = common;
@@ -50,12 +54,18 @@ function SnowballProgram() {
 				i = k;
 				common_i = common;
 			}
+
 			if (j - i <= 1) {
 				if (i > 0 || j === i || first_key_inspected)
 					break;
 				first_key_inspected = true;
 			}
 		}
+
+		return [i, common_i];
+	}
+
+	function resolve_among_match(self, v, i, common_i, c, backward) {
 		while (true) {
 			var w = v[i];
 			if (common_i >= w.s_size) {
@@ -72,6 +82,12 @@ function SnowballProgram() {
 				return 0;
 		}
 	}
+
+	function find_among_internal(self, v, v_size, backward) {
+		var match = search_among_binary(self, v, v_size, backward);
+		return resolve_among_match(self, v, match[0], match[1], self.cursor, backward);
+	}
+
 	return {
 		bra : 0,
 		ket : 0,
