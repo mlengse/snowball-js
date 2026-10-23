@@ -520,3 +520,110 @@ describe("SnowballProgram in_grouping_b direct unit tests", () => {
     expect(sbp.cursor).toBe(1);
   });
 });
+
+
+describe("SnowballProgram insert direct unit tests", () => {
+  const fs = require("fs");
+  const path = require("path");
+  const programCode = fs.readFileSync(
+    path.join(__dirname, "../stemmer/src/SnowballProgram.js"),
+    "utf8"
+  );
+  const SnowballProgram = new Function(programCode + "; return SnowballProgram;")();
+
+  it("updates bra, ket, limit, cursor, and current when c_bra <= bra", () => {
+    const sbp = SnowballProgram();
+    sbp.setCurrent("cat");
+    sbp.bra = 1;
+    sbp.ket = 3;
+    sbp.cursor = 2;
+
+    sbp.insert(0, 0, "super");
+
+    expect(sbp.getCurrent()).toBe("supercat");
+    expect(sbp.bra).toBe(6);
+    expect(sbp.ket).toBe(8);
+    expect(sbp.limit).toBe(8);
+    expect(sbp.cursor).toBe(7);
+  });
+
+  it("updates bra and ket when c_bra is equal to bra", () => {
+    const sbp = SnowballProgram();
+    sbp.setCurrent("cat");
+    sbp.bra = 1;
+    sbp.ket = 3;
+    sbp.cursor = 2;
+
+    sbp.insert(1, 1, "X");
+
+    expect(sbp.getCurrent()).toBe("cXat");
+    expect(sbp.bra).toBe(2);
+    expect(sbp.ket).toBe(4);
+    expect(sbp.limit).toBe(4);
+    expect(sbp.cursor).toBe(3);
+  });
+
+  it("keeps bra unchanged and updates ket, cursor, limit, and current when bra < c_bra <= ket", () => {
+    const sbp = SnowballProgram();
+    sbp.setCurrent("testing");
+    sbp.bra = 0;
+    sbp.ket = 7;
+    sbp.cursor = 4;
+
+    sbp.insert(2, 2, "123");
+
+    expect(sbp.getCurrent()).toBe("te123sting");
+    expect(sbp.bra).toBe(0);
+    expect(sbp.ket).toBe(10);
+    expect(sbp.limit).toBe(10);
+    expect(sbp.cursor).toBe(7);
+  });
+
+  it("keeps bra and ket unchanged when c_bra > ket", () => {
+    const sbp = SnowballProgram();
+    sbp.setCurrent("testing");
+    sbp.bra = 0;
+    sbp.ket = 4;
+    sbp.cursor = 2;
+
+    sbp.insert(5, 5, "XYZ");
+
+    expect(sbp.getCurrent()).toBe("testiXYZng");
+    expect(sbp.bra).toBe(0);
+    expect(sbp.ket).toBe(4);
+    expect(sbp.limit).toBe(10);
+    expect(sbp.cursor).toBe(2);
+  });
+
+  it("handles range replacement via insert with positive, zero, and negative adjustments", () => {
+    const sbp1 = SnowballProgram();
+    sbp1.setCurrent("abcdef");
+    sbp1.bra = 1;
+    sbp1.ket = 5;
+    sbp1.cursor = 3;
+    sbp1.insert(1, 3, "12345");
+    expect(sbp1.getCurrent()).toBe("a12345def");
+    expect(sbp1.bra).toBe(4);
+    expect(sbp1.ket).toBe(8);
+
+    const sbp2 = SnowballProgram();
+    sbp2.setCurrent("abcdef");
+    sbp2.bra = 1;
+    sbp2.ket = 5;
+    sbp2.cursor = 3;
+    sbp2.insert(1, 4, "XYZ");
+    expect(sbp2.getCurrent()).toBe("aXYZef");
+    expect(sbp2.bra).toBe(1);
+    expect(sbp2.ket).toBe(5);
+
+    const sbp3 = SnowballProgram();
+    sbp3.setCurrent("abcdef");
+    sbp3.bra = 1;
+    sbp3.ket = 5;
+    sbp3.cursor = 3;
+    sbp3.insert(1, 4, "X");
+    expect(sbp3.getCurrent()).toBe("aXef");
+    expect(sbp3.bra).toBe(-1);
+    expect(sbp3.ket).toBe(3);
+  });
+});
