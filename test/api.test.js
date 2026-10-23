@@ -645,3 +645,64 @@ describe("SnowballProgram insert direct unit tests", () => {
     expect(sbp3.ket).toBe(3);
   });
 });
+
+describe("SnowballProgram in_grouping direct unit tests", () => {
+  const fs = require("fs");
+  const path = require("path");
+  const programCode = fs.readFileSync(
+    path.join(__dirname, "../stemmer/src/SnowballProgram.js"),
+    "utf8"
+  );
+  const SnowballProgram = new Function(programCode + "; return SnowballProgram;")();
+
+  it("returns false and leaves cursor unchanged when cursor >= limit", () => {
+    const sbp = SnowballProgram();
+    sbp.setCurrent("a");
+    sbp.cursor = 1;
+    const res = sbp.in_grouping([0xff], 97, 120);
+    expect(res).toBe(false);
+    expect(sbp.cursor).toBe(1);
+  });
+
+  it("returns false and leaves cursor unchanged when char < min", () => {
+    const sbp = SnowballProgram();
+    sbp.setCurrent("a"); // ASCII 97
+    const res = sbp.in_grouping([0xff], 98, 120);
+    expect(res).toBe(false);
+    expect(sbp.cursor).toBe(0);
+  });
+
+  it("returns false and leaves cursor unchanged when char > max", () => {
+    const sbp = SnowballProgram();
+    sbp.setCurrent("z"); // ASCII 122
+    const res = sbp.in_grouping([0xff], 97, 120);
+    expect(res).toBe(false);
+    expect(sbp.cursor).toBe(0);
+  });
+
+  it("returns false and leaves cursor unchanged when char is in range [min, max] but bit is not set", () => {
+    const sbp = SnowballProgram();
+    sbp.setCurrent("b"); // ASCII 98; min = 97, ch - min = 1 (bit 1 of byte 0)
+    const res = sbp.in_grouping([0x01], 97, 100); // 0x01 sets bit 0 ("a"), not bit 1 ("b")
+    expect(res).toBe(false);
+    expect(sbp.cursor).toBe(0);
+  });
+
+  it("returns true and increments cursor when char is in range [min, max] and bit is set", () => {
+    const sbp = SnowballProgram();
+    sbp.setCurrent("a"); // ASCII 97; min = 97, ch - min = 0 (bit 0 of byte 0)
+    const res = sbp.in_grouping([0x01], 97, 100);
+    expect(res).toBe(true);
+    expect(sbp.cursor).toBe(1);
+  });
+
+  it("handles byte and bit shifting across multiple bytes in grouping array s", () => {
+    const sbp = SnowballProgram();
+    // "i" is ASCII 105; min = 97 => offset = 8 => byte index 1 (8 >> 3), bit index 0 (8 & 7)
+    sbp.setCurrent("i");
+    const grouping = [0x00, 0x01]; // byte 0 is 0, byte 1 has bit 0 set (1 << 0)
+    const res = sbp.in_grouping(grouping, 97, 120);
+    expect(res).toBe(true);
+    expect(sbp.cursor).toBe(1);
+  });
+});
