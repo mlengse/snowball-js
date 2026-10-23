@@ -107,12 +107,9 @@ ${indent(body, 1)}
 console.log(`Build complete: ${languageNames.length} per-language bundles in dist/languages/`);
 
 function calculateDeltaDepth(line) {
-  let delta = 0;
-  for (const ch of line) {
-    if (ch === '{') delta++;
-    else if (ch === '}') delta--;
-  }
-  return delta;
+  const open = (line.match(/\{/g) || []).length;
+  const close = (line.match(/\}/g) || []).length;
+  return open - close;
 }
 
 function extractFunctionLines(lines) {
