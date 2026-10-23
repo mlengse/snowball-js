@@ -706,3 +706,83 @@ describe("SnowballProgram in_grouping direct unit tests", () => {
     expect(sbp.cursor).toBe(1);
   });
 });
+
+describe("SnowballProgram replace_s direct unit tests", () => {
+  const fs = require("fs");
+  const path = require("path");
+  const programCode = fs.readFileSync(
+    path.join(__dirname, "../stemmer/src/SnowballProgram.js"),
+    "utf8"
+  );
+  const SnowballProgram = new Function(programCode + "; return SnowballProgram;")();
+
+  it("replaces target slice and updates current, limit, and returns adjustment", () => {
+    const sbp = SnowballProgram();
+    sbp.setCurrent("abcdef");
+    // Replace "cd" (slice index 2 to 4) with "1234"
+    const adjustment = sbp.replace_s(2, 4, "1234");
+
+    expect(adjustment).toBe(2); // 4 - (4 - 2) = 2
+    expect(sbp.getCurrent()).toBe("ab1234ef");
+    expect(sbp.limit).toBe(8);
+  });
+
+  it("adjusts cursor when cursor >= c_ket", () => {
+    const sbp = SnowballProgram();
+    sbp.setCurrent("abcdef");
+    sbp.cursor = 5; // pointing at 'f'
+
+    const adjustment = sbp.replace_s(2, 4, "1234");
+
+    expect(adjustment).toBe(2);
+    expect(sbp.cursor).toBe(7); // 5 + 2 = 7 ('f' in "ab1234ef")
+  });
+
+  it("sets cursor to c_bra when c_bra < cursor < c_ket", () => {
+    const sbp = SnowballProgram();
+    sbp.setCurrent("abcdef");
+    sbp.cursor = 3; // inside "cd"
+
+    const adjustment = sbp.replace_s(2, 4, "1234");
+
+    expect(adjustment).toBe(2);
+    expect(sbp.cursor).toBe(2); // reset to c_bra
+  });
+
+  it("leaves cursor unchanged when cursor <= c_bra", () => {
+    const sbp = SnowballProgram();
+    sbp.setCurrent("abcdef");
+    sbp.cursor = 1; // before "cd"
+
+    const adjustment = sbp.replace_s(2, 4, "1234");
+
+    expect(adjustment).toBe(2);
+    expect(sbp.cursor).toBe(1); // unchanged
+  });
+
+  it("handles replacement with an empty string (deletion)", () => {
+    const sbp = SnowballProgram();
+    sbp.setCurrent("abcdef");
+    sbp.cursor = 5;
+
+    const adjustment = sbp.replace_s(2, 4, "");
+
+    expect(adjustment).toBe(-2);
+    expect(sbp.getCurrent()).toBe("abef");
+    expect(sbp.limit).toBe(4);
+    expect(sbp.cursor).toBe(3);
+  });
+
+  it("handles insertion when c_bra equals c_ket", () => {
+    const sbp = SnowballProgram();
+    sbp.setCurrent("abcdef");
+    sbp.cursor = 2;
+
+    const adjustment = sbp.replace_s(2, 2, "XYZ");
+
+    expect(adjustment).toBe(3);
+    expect(sbp.getCurrent()).toBe("abXYZcdef");
+    expect(sbp.limit).toBe(9);
+    expect(sbp.cursor).toBe(5); // cursor >= c_ket (2 >= 2) so cursor += 3 -> 5
+  });
+});
