@@ -397,3 +397,51 @@ describe("SnowballProgram out_grouping direct unit tests", () => {
     expect(sbp.cursor).toBe(1);
   });
 });
+
+describe("SnowballProgram eq_v_b direct unit tests", () => {
+  const fs = require("fs");
+  const path = require("path");
+  const programCode = fs.readFileSync(
+    path.join(__dirname, "../stemmer/src/SnowballProgram.js"),
+    "utf8"
+  );
+  const SnowballProgram = new Function(programCode + "; return SnowballProgram;")();
+
+  it("returns true and moves cursor backward when string matches backward", () => {
+    const sbp = SnowballProgram();
+    sbp.setCurrent("testing");
+    sbp.cursor = 7;
+    const result = sbp.eq_v_b("ing");
+    expect(result).toBe(true);
+    expect(sbp.cursor).toBe(4);
+  });
+
+  it("returns false and leaves cursor unchanged when string does not match backward", () => {
+    const sbp = SnowballProgram();
+    sbp.setCurrent("testing");
+    sbp.cursor = 7;
+    const result = sbp.eq_v_b("abc");
+    expect(result).toBe(false);
+    expect(sbp.cursor).toBe(7);
+  });
+
+  it("returns false when search string length exceeds available backward buffer limit", () => {
+    const sbp = SnowballProgram();
+    sbp.setCurrent("testing");
+    sbp.cursor = 2;
+    sbp.limit_backward = 0;
+    const result = sbp.eq_v_b("test");
+    expect(result).toBe(false);
+    expect(sbp.cursor).toBe(2);
+  });
+
+  it("respects limit_backward boundary", () => {
+    const sbp = SnowballProgram();
+    sbp.setCurrent("testing");
+    sbp.cursor = 7;
+    sbp.limit_backward = 4;
+    const result = sbp.eq_v_b("testing");
+    expect(result).toBe(false);
+    expect(sbp.cursor).toBe(7);
+  });
+});
